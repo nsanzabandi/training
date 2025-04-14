@@ -1,6 +1,7 @@
 from django import forms
 from .models import Training, Participant, Department,Staff, Enrollment
 from django.contrib.auth.forms import UserCreationForm
+from django.contrib.auth.models import User
 
 
 class DepartmentForm(forms.ModelForm):
@@ -18,7 +19,7 @@ class TrainingForm(forms.ModelForm):
         fields = [
             'title', 'description', 'department', 'start_date', 'end_date',
             'start_time', 'end_time', 'location', 'max_capacity',
-            'coordinator', 'concept_note'  # ⬅ added field
+            'coordinator', 'concept_note'
         ]
         widgets = {
             'start_date': forms.DateInput(attrs={'type': 'date'}),
@@ -26,6 +27,21 @@ class TrainingForm(forms.ModelForm):
             'start_time': forms.TimeInput(attrs={'type': 'time'}),
             'end_time': forms.TimeInput(attrs={'type': 'time'}),
         }
+
+    def __init__(self, *args, **kwargs):
+        user = kwargs.pop('user', None)
+        super().__init__(*args, **kwargs)
+        
+        # Restrict coordinator to users whose Staff role is 'supervisor'
+        supervisor_ids = Staff.objects.filter(role='supervisor').values_list('user__id', flat=True)
+        self.fields['coordinator'].queryset = User.objects.filter(id__in=supervisor_ids)
+        self.fields['coordinator'].required = False  # Optional, to handle cases with no supervisors
+        
+        if user and hasattr(user, 'staff') and user.staff.role == 'regular':
+            # Restrict department to user's department
+            self.fields['department'].queryset = Department.objects.filter(id=user.staff.department.id)
+            self.fields['department'].initial = user.staff.department
+            self.fields['department'].widget.attrs['readonly'] = True
 
 
     def clean(self):
@@ -44,7 +60,17 @@ class TrainingForm(forms.ModelForm):
 class ParticipantForm(forms.ModelForm):
     class Meta:
         model = Participant
-        fields = ['full_name', 'email', 'phone', 'department', 'position', 'notes']
+        fields = ['full_name', 'email', 'department', 'phone', 'position']
+
+    def __init__(self, *args, **kwargs):
+        user = kwargs.pop('user', None)  # Get the user from kwargs
+        super().__init__(*args, **kwargs)
+        
+        if user and hasattr(user, 'staff') and user.staff.role == 'regular':
+            # Restrict department dropdown to user's department only
+            self.fields['department'].queryset = Department.objects.filter(id=user.staff.department.id)
+            self.fields['department'].initial = user.staff.department
+            self.fields['department'].widget.attrs['readonly'] = True
 
 
 class StaffForm(forms.ModelForm):
@@ -68,13 +94,21 @@ class CustomUserCreationForm(UserCreationForm):
             else:
                 self.fields[field].widget.attrs.update({'class': 'form-control'})
 
-from django import forms
-from .models import Enrollment
 
 class EnrollmentForm(forms.ModelForm):
     class Meta:
         model = Enrollment
         fields = ['participant', 'training', 'confirmation_status', 'attendance_status', 'notes']
+
+    def __init__(self, *args, **kwargs):
+        user = kwargs.pop('user', None)  # Get the user from kwargs
+        super().__init__(*args, **kwargs)
+        
+        if user and hasattr(user, 'staff') and user.staff.role == 'regular':
+            # Restrict participant dropdown to those in the user's department
+            self.fields['participant'].queryset = Participant.objects.filter(department=user.staff.department)
+            # Restrict training dropdown to those in the user's department
+            self.fields['training'].queryset = Training.objects.filter(department=user.staff.department)
 
     def clean(self):
         cleaned_data = super().clean()

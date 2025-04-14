@@ -213,13 +213,15 @@ def participant_create(request):
         staff = request.user.staff
     except Staff.DoesNotExist:
         staff = None 
+
     if request.method == 'POST':
-        form = ParticipantForm(request.POST)
+        form = ParticipantForm(request.POST, user=request.user)  # Pass user to form
         if form.is_valid():
             form.save()
+            messages.success(request, "Participant created successfully.")
             return redirect('participant_list')
     else:
-        form = ParticipantForm()
+        form = ParticipantForm(user=request.user)  # Pass user to form
 
     return render(request, 'trainings/participant_form.html', {
         'form': form,
@@ -238,12 +240,13 @@ def participant_edit(request, pk):
         return redirect('participant_list')
 
     if request.method == 'POST':
-        form = ParticipantForm(request.POST, instance=participant)
+        form = ParticipantForm(request.POST, instance=participant, user=request.user)  # Pass user
         if form.is_valid():
             form.save()
+            messages.success(request, "Participant updated successfully.")
             return redirect('participant_list')
     else:
-        form = ParticipantForm(instance=participant)
+        form = ParticipantForm(instance=participant, user=request.user)  # Pass user
         
     return render(request, 'trainings/participant_form.html', {
         'form': form,
@@ -414,17 +417,21 @@ def enrollment_list(request):
 
 @login_required
 def enrollment_create(request):
+    try:
+        staff = request.user.staff
+    except Staff.DoesNotExist:
+        staff = None 
+
     if request.method == 'POST':
-        form = EnrollmentForm(request.POST)
+        form = EnrollmentForm(request.POST, user=request.user)  # Pass user to form
         if form.is_valid():
             enrollment = form.save(commit=False)
             enrollment.enrolled_by = request.user
 
             # Set confirmation date if already marked confirmed
             if enrollment.confirmation_status == 'confirmed':
-                from django.utils.timezone import now
                 enrollment.confirmation_date = now()
-
+            
             enrollment.save()
 
             # Build confirmation link
@@ -444,8 +451,12 @@ def enrollment_create(request):
             messages.success(request, 'Enrollment created and confirmation email sent.')
             return redirect('enrollment_list')
     else:
-        form = EnrollmentForm()
-    return render(request, 'trainings/enrollment_form.html', {'form': form,'staff': request.user.staff})
+        form = EnrollmentForm(user=request.user)  # Pass user to form
+
+    return render(request, 'trainings/enrollment_form.html', {
+        'form': form,
+        'staff': staff
+    })
 
 
 @login_required
