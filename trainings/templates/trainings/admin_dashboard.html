@@ -1,0 +1,249 @@
+{% extends 'base.html' %}
+{% load custom_tags %}
+{% load static %}
+
+{% block title %}Admin Dashboard{% endblock %}
+
+
+{% block content %}
+<div class="training-list-container">
+  <!-- Sidebar --> 
+  {% include 'trainings/sidebar.html' %}
+  <!-- Main Content -->
+  <div class="main-content">
+    <!-- Top Navigation -->
+    <div class="top-nav">
+      <div class="welcome">
+        <h4>Dashboard</h4>
+        <span>Main Dashboard</span>
+      </div>
+      <div class="user-actions">
+        <div class="date">Today: <span>{{ current_date }}</span></div>
+        <div class="notifications">
+          <i class="fas fa-bell"></i>
+        </div>
+        <div class="messages">
+          <i class="fas fa-envelope"></i>
+        </div>
+      </div>
+    </div>
+
+    <!-- Stats Cards -->
+    <div class="stats-cards">
+      <div class="stat-card">
+        <div class="stat-info">
+          <h6>Total Trainings</h6>
+          <h3>{{ total_trainings }}</h3>
+        </div>
+        <div class="stat-icon">
+          <i class="fas fa-calendar-alt"></i>
+        </div>
+      </div>
+      <div class="stat-card">
+        <div class="stat-info">
+          <h6>Pending Trainings</h6>
+          <h3>{{ pending_trainings }}</h3>
+        </div>
+        <div class="stat-icon">
+          <i class="fas fa-clock"></i>
+        </div>
+      </div>
+      <div class="stat-card">
+        <div class="stat-info">
+          <h6>Total Participants</h6>
+          <h3>{{ total_participants }}</h3>
+        </div>
+        <div class="stat-icon">
+          <i class="fas fa-users"></i>
+        </div>
+      </div>
+      <div class="stat-card">
+        <div class="stat-info">
+          <h6>Confirmed Enrollments</h6>
+          <h3>{{ total_confirmed }}</h3>
+        </div>
+        <div class="stat-icon">
+          <i class="fas fa-check-circle"></i>
+        </div>
+      </div>
+    </div>
+
+    <div class="content-section">
+      <div class="row">
+        <!-- Trainings Table -->
+        <div class="col-12">
+          <div class="card">
+            <div class="card-header">
+              <h4>Registered Trainings</h4>
+            </div>
+            <div class="card-body">
+              {% if trainings %}
+              <div class="table-responsive">
+                <table class="table table-hover">
+                  <thead>
+                    <tr>
+                      <th>Title</th>
+                      <th>Department</th>
+                      <th>Created By</th>
+                      <th>Start Date</th>
+                      <th>End Date</th>
+                      <th>Status</th>
+                      <th>Document</th> <!-- ✅ New column -->
+                      <th>Actions</th>
+                    </tr>
+                  </thead>
+                  <tbody>
+                    {% for training in trainings %}
+                    <tr>
+                      <td>{{ training.title }}</td>
+                      <td>{{ training.department }}</td>
+                      <td>{{ training.created_by.username }}</td>
+                      <td>{{ training.start_date }}</td>
+                      <td>{{ training.end_date }}</td>
+                      <td>
+                        {% if training.status == 'approved' %}
+                        <span class="badge bg-success">{{ training.status|title }}</span>
+                        {% elif training.status == 'pending' %}
+                        <span class="badge bg-warning text-dark">{{ training.status|title }}</span>
+                        {% elif training.status == 'rejected' %}
+                        <span class="badge bg-danger">{{ training.status|title }}</span>
+                        {% else %}
+                        <span class="badge bg-secondary">{{ training.status|title }}</span>
+                        {% endif %}
+                      </td>
+          
+                      <!-- ✅ Document View Link -->
+                      <td>
+                        {% if training.concept_note %}
+                        <a href="{{ training.concept_note.url }}" class="btn btn-sm btn-outline-secondary" target="_blank">
+                          <i class="fas fa-file-alt"></i> View
+                        </a>
+                        {% else %}
+                        <span class="text-muted">No File</span>
+                        {% endif %}
+                      </td>
+          
+                      <td>
+                        {% if training.status == 'pending' %}
+                        <div class="action-buttons">
+                          <a href="{% url 'approve_training' training.id %}" class="btn btn-sm btn-success">
+                            <i class="fas fa-check"></i>
+                          </a>
+                          <a href="{% url 'reject_training' training.id %}" class="btn btn-sm btn-danger">
+                            <i class="fas fa-times"></i>
+                          </a>
+                        </div>
+                        {% else %}
+                        <span class="text-muted">No actions</span>
+                        {% endif %}
+                      </td>
+                    </tr>
+                    {% endfor %}
+                  </tbody>
+                </table>
+              </div>
+              {% else %}
+              <p>No trainings found.</p>
+              {% endif %}
+            </div>
+          </div>
+    </div>
+
+    <div class="content-section">
+      <div class="row">
+        <!-- Enrollment Chart -->
+        <div class="col-md-8">
+          <div class="card">
+            <div class="card-header">
+              <h4>Confirmed Enrollments</h4>
+            </div>
+            <div class="card-body">
+              <canvas id="enrollmentChart" height="300"></canvas>
+            </div>
+          </div>
+        </div>
+        
+        <!-- Enrollment Summary -->
+        <div class="col-md-4">
+          <div class="card">
+            <div class="card-header">
+              <h4>Enrollment Summary</h4>
+            </div>
+            <div class="card-body">
+              <div class="table-responsive">
+                <table class="table table-sm">
+                  <thead>
+                    <tr>
+                      <th>Training</th>
+                      <th>Confirmed</th>
+                      <th>Pending</th>
+                      <th>Total</th>
+                    </tr>
+                  </thead>
+                  <tbody>
+                    {% for training in trainings %}
+                    <tr>
+                      <td class="text-truncate" style="max-width: 120px;">{{ training.title }}</td>
+                      <td>{{ training_stats|get_item:training.id|dict_get:'confirmed' }}</td>
+                      <td>{{ training_stats|get_item:training.id|dict_get:'pending' }}</td>
+                      <td>{{ training_stats|get_item:training.id|dict_get:'total' }}</td>
+                    </tr>
+                    {% endfor %}
+                  </tbody>
+                </table>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- Import FontAwesome -->
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
+
+
+<!-- Import Chart.js -->
+<script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+
+<script>
+  const ctx = document.getElementById('enrollmentChart').getContext('2d');
+  const enrollmentChart = new Chart(ctx, {
+    type: 'bar',
+    data: {
+      labels: {{ chart_labels|safe }},
+      datasets: [{
+        label: 'Confirmed Enrollments',
+        data: {{ chart_data|safe }},
+        backgroundColor: '#6c5ce7',
+        borderRadius: 6,
+      }]
+    },
+    options: {
+      responsive: true,
+      maintainAspectRatio: false,
+      plugins: {
+        legend: { display: false },
+        title: {
+          display: false
+        }
+      },
+      scales: {
+        y: {
+          beginAtZero: true,
+          grid: {
+            display: true,
+            color: 'rgba(0, 0, 0, 0.05)'
+          }
+        },
+        x: {
+          grid: {
+            display: false
+          }
+        }
+      }
+    }
+  });
+</script>
+{% endblock %}

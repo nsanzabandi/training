@@ -1,0 +1,90 @@
+{% extends 'base.html' %}
+{% block title %}My Training Report{% endblock %}
+
+{% block content %}
+<div class="d-flex">
+  {% include 'trainings/sidebar.html' %}
+
+  <div class="main-content px-4 pt-4 w-100">
+    
+    <!-- Page Header -->
+    <div class="row align-items-center mb-4">
+      <div class="col-md-6">
+        <h3 class="mb-0">📊 My Training Report</h3>
+        <small class="text-muted">Attendance summary for trainings you created</small>
+      </div>
+      <div class="col-md-6 text-end">
+        <a href="{% url 'dashboard' %}" class="btn btn-outline-primary btn-sm">
+          <i class="fas fa-arrow-left"></i> Back to Dashboard
+        </a>
+      </div>
+    </div>
+
+    <!-- Filter Section -->
+    <form method="get" class="row g-3 mb-4 align-items-end">
+      <div class="col-md-6">
+        <label for="training" class="form-label">Filter by Training</label>
+        <select name="training" id="training" class="form-select">
+          <option value="">All Trainings</option>
+          {% for t in trainings %}
+            <option value="{{ t.id }}" {% if t.id|stringformat:"s" == selected_training_id %}selected{% endif %}>
+              {{ t.title }}
+            </option>
+          {% endfor %}
+        </select>
+      </div>
+      <div class="col-md-6 text-end">
+        <button type="submit" class="btn btn-primary me-2">Apply Filter</button>
+        <button type="submit" name="export" value="csv" class="btn btn-success">
+          <i class="fas fa-file-csv"></i> Export CSV
+        </button>
+      </div>
+    </form>
+
+    <!-- Enrollment Table -->
+    {% if enrollments %}
+      <div class="table-responsive">
+        <table class="table table-bordered table-hover table-sm">
+          <thead class="table-light">
+            <tr>
+              <th>#</th>
+              <th>Participant</th>
+              <th>Email</th>
+              <th>Training</th>
+              <th>Start Date</th>
+              <th>End Date</th>
+              <th>Attendance</th>
+            </tr>
+          </thead>
+          <tbody>
+            {% for e in enrollments %}
+            <tr>
+              <td>{{ forloop.counter }}</td>
+              <td>{{ e.participant.full_name }}</td>
+              <td>{{ e.participant.email }}</td>
+              <td>{{ e.training.title }}</td>
+              <td>{{ e.training.start_date }}</td>
+              <td>{{ e.training.end_date }}</td>
+              <td>
+                <span class="badge 
+                  {% if e.attendance_status == 'attended' %}bg-success
+                  {% elif e.attendance_status == 'absent' %}bg-danger
+                  {% else %}bg-secondary{% endif %}">
+                  {{ e.attendance_status|title }}
+                </span>
+              </td>
+            </tr>
+            {% endfor %}
+          </tbody>
+        </table>
+      </div>
+    {% else %}
+      <div class="text-center py-5 text-muted">
+        <i class="fas fa-info-circle fa-2x mb-2"></i>
+        <p>No data available for the selected training.</p>
+      </div>
+    {% endif %}
+
+  </div>
+</div>
+{% endblock %}

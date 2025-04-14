@@ -1,0 +1,475 @@
+
+  :root {
+    --primary-color: #6c5ce7;
+    --secondary-color: #00b894;
+    --danger-color: #ff7675;
+    --warning-color: #fdcb6e;
+    --text-color: #2d3436;
+    --light-text: #636e72;
+    --bg-color: #f5f6fa;
+    --card-bg: #ffffff;
+    --sidebar-bg: #2c3e50;
+    --sidebar-text: #ecf0f1;
+  }
+
+  body {
+    background-color: var(--bg-color);
+    color: var(--text-color);
+    font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+    margin: 0;
+    padding: 0;
+  }
+
+  .dashboard-wrapper {
+    display: flex;
+    min-height: 100vh;
+  }
+
+  /* Sidebar Styles */
+  .sidebar {
+    width: 250px;
+    min-height: 100vh;
+    background-color: #2c3e50;
+    color: #fff;
+    position: sticky;
+    top: 0;
+  }
+  
+
+  .logo {
+    padding: 1rem 0;
+    border-bottom: 1px solid rgba(255,255,255,0.1);
+    margin-bottom: 1rem;
+    text-align: center;
+  }
+
+  .logo h3 {
+    margin: 0;
+    color: white;
+    font-weight: 600;
+  }
+
+  .user-info {
+    display: flex;
+    align-items: center;
+    padding: 1rem 0;
+    border-bottom: 1px solid rgba(255,255,255,0.1);
+    margin-bottom: 1rem;
+  }
+
+  .avatar {
+    width: 40px;
+    height: 40px;
+    border-radius: 50%;
+    overflow: hidden;
+    margin-right: 10px;
+  }
+
+  .avatar img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+  }
+
+  .user-details h5 {
+    margin: 0;
+    font-size: 0.9rem;
+    font-weight: 600;
+  }
+
+  .menu ul {
+    list-style: none;
+    padding: 0;
+    margin: 0;
+  }
+
+  .menu li {
+    margin-bottom: 0.5rem;
+    border-radius: 5px;
+    transition: all 0.3s;
+  }
+
+  .menu li.active, .menu li:hover {
+    background-color: rgba(255,255,255,0.1);
+  }
+
+  .menu li a, .menu li {
+    display: flex;
+    align-items: center;
+    padding: 0.75rem 1rem;
+    color: var(--sidebar-text);
+    text-decoration: none;
+    font-size: 0.9rem;
+  }
+
+  .menu li i {
+    margin-right: 10px;
+    font-size: 1.1rem;
+    width: 20px;
+    text-align: center;
+  }
+
+  /* Main Content Styles */
+  .main-content {
+    flex: 1;
+    margin-left: 250px;
+    padding: 1rem;
+  }
+
+  .top-nav {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 1.5rem;
+    padding: 0.5rem 0;
+  }
+
+  .welcome h4 {
+    margin: 0;
+    font-weight: 600;
+  }
+
+  .welcome span {
+    color: var(--light-text);
+    font-size: 0.8rem;
+  }
+
+  .user-actions {
+    display: flex;
+    align-items: center;
+  }
+
+  .date {
+    margin-right: 1rem;
+    font-size: 0.9rem;
+  }
+
+  .notifications, .messages {
+    width: 40px;
+    height: 40px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    background-color: var(--card-bg);
+    border-radius: 50%;
+    margin-left: 0.5rem;
+    cursor: pointer;
+    box-shadow: 0 2px 5px rgba(0,0,0,0.1);
+  }
+
+  /* Stats Cards */
+  .stats-cards {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(240px, 1fr));
+    gap: 1rem;
+    margin-bottom: 1.5rem;
+  }
+
+  .stat-card {
+    background-color: var(--card-bg);
+    border-radius: 10px;
+    padding: 1.5rem;
+    box-shadow: 0 2px 10px rgba(0,0,0,0.05);
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    transition: transform 0.3s;
+  }
+
+  .stat-card:hover {
+    transform: translateY(-5px);
+  }
+
+  .stat-info h6 {
+    margin: 0;
+    color: var(--light-text);
+    font-size: 0.85rem;
+    font-weight: 500;
+  }
+
+  .stat-info h3 {
+    margin: 0.5rem 0 0;
+    font-weight: 600;
+    font-size: 1.8rem;
+  }
+
+  .stat-icon {
+    width: 50px;
+    height: 50px;
+    border-radius: 10px;
+    background-color: rgba(108, 92, 231, 0.1);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    color: var(--primary-color);
+    font-size: 1.5rem;
+  }
+
+  .stat-card:nth-child(2) .stat-icon {
+    background-color: rgba(253, 203, 110, 0.1);
+    color: var(--warning-color);
+  }
+
+  .stat-card:nth-child(3) .stat-icon {
+    background-color: rgba(0, 184, 148, 0.1);
+    color: var(--secondary-color);
+  }
+
+  .stat-card:nth-child(4) .stat-icon {
+    background-color: rgba(0, 206, 201, 0.1);
+    color: #00cec9;
+  }
+
+  /* Content Sections */
+  .content-section {
+    margin-bottom: 1.5rem;
+  }
+
+  .card {
+    background-color: var(--card-bg);
+    border-radius: 10px;
+    box-shadow: 0 2px 10px rgba(0,0,0,0.05);
+    overflow: hidden;
+    margin-bottom: 1.5rem;
+    border: none;
+  }
+
+  .card-header {
+    padding: 1rem 1.5rem;
+    border-bottom: 1px solid rgba(0,0,0,0.05);
+    background-color: var(--card-bg);
+  }
+
+  .card-header h4 {
+    margin: 0;
+    font-size: 1.1rem;
+    font-weight: 600;
+  }
+
+  .card-body {
+    padding: 1.5rem;
+  }
+
+  /* Table Styles */
+  .table {
+    width: 100%;
+    margin-bottom: 0;
+  }
+
+  .table th {
+    font-weight: 600;
+    font-size: 0.85rem;
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+    border-top: none;
+    padding: 0.75rem;
+    vertical-align: middle;
+  }
+
+  .table td {
+    padding: 0.75rem;
+    vertical-align: middle;
+    font-size: 0.9rem;
+  }
+
+  .badge {
+    padding: 0.4rem 0.6rem;
+    font-size: 0.75rem;
+    font-weight: 500;
+    border-radius: 5px;
+  }
+
+  .action-buttons {
+    display: flex;
+    gap: 0.5rem;
+  }
+
+  .btn-sm {
+    padding: 0.25rem 0.5rem;
+    border-radius: 4px;
+    font-size: 0.8rem;
+  }
+
+  /* Responsive Design */
+  @media (max-width: 992px) {
+    .sidebar {
+      width: 80px;
+      padding: 1rem 0.5rem;
+    }
+    
+    .logo h3, .user-details h5, .menu li span {
+      display: none;
+    }
+    
+    .user-info {
+      justify-content: center;
+    }
+    
+    .menu li a, .menu li {
+      justify-content: center;
+    }
+    
+    .menu li i {
+      margin-right: 0;
+    }
+    
+    .main-content {
+      margin-left: 80px;
+    }
+  }
+
+  @media (max-width: 768px) {
+    .stats-cards {
+      grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+    }
+  }
+
+  @media (max-width: 576px) {
+    .top-nav {
+      flex-direction: column;
+      align-items: flex-start;
+    }
+    
+    .user-actions {
+      margin-top: 1rem;
+    }
+    
+    .stats-cards {
+      grid-template-columns: 1fr;
+    }
+  }
+
+/* Fix for scrolling issue */
+html, body {
+  height: 100%;
+  margin: 0;
+  padding: 0;
+  scroll-behavior: smooth;
+  overflow-x: hidden;
+}
+
+body {
+  display: flex;
+  flex-direction: column;
+}
+
+/* Fix the sidebar positioning */
+.sidebar {
+  position: fixed;
+  left: 0;
+  top: 0;
+  height: 100vh;
+  overflow-y: auto;
+  z-index: 100;
+}
+
+/* Fix the main content positioning */
+.main-content {
+  margin-left: 250px; /* Match sidebar width */
+  flex: 1;
+  min-height: 100vh;
+  padding: 1rem;
+  overflow-y: auto;
+  position: relative;
+  top: 0;
+}
+
+/* Reset scroll position on page load */
+window.onload = function() {
+  window.scrollTo(0, 0);
+  document.querySelector('.main-content').scrollTop = 0;
+}
+
+/* Fix for responsive design */
+@media (max-width: 992px) {
+  .main-content {
+    margin-left: 80px; /* Match the collapsed sidebar width */
+  }
+}
+
+@media (max-width: 768px) {
+  .sidebar {
+    position: relative;
+    width: 100%;
+    min-height: auto;
+    height: auto;
+  }
+  
+  .main-content {
+    margin-left: 0;
+  }
+}
+
+/* Fix for the training-list-container if it exists */
+.training-list-container {
+  display: flex;
+  min-height: 100vh;
+  width: 100%;
+}
+ 
+/* Layout adjustment fixes */
+
+/* Fix the main content layout */
+.main-content {
+  padding-top: 20px;
+  width: calc(100% - 250px); /* Account for sidebar width */
+  box-sizing: border-box;
+}
+
+/* Improve the header and title positioning */
+.top-nav, h1, h2, h3, h4 {
+  margin-top: 0;
+  padding-top: 0;
+}
+
+/* Fix the table container */
+.table-responsive {
+  width: 100%;
+  margin-top: 20px;
+}
+
+/* Ensure the content aligns properly */
+.content-section {
+  width: 100%;
+  padding: 0;
+}
+
+/* Fix for the "Trainings List" title and buttons */
+.trainings-header {
+  display: flex;
+  align-items: center;
+  margin-bottom: 20px;
+  gap: 15px;
+}
+
+/* Add this class to your header div containing the title and buttons */
+.trainings-header h2,
+.trainings-header h3 {
+  margin: 0;
+  margin-right: auto;
+}
+
+/* Adjust search positioning */
+.search-container {
+  margin-bottom: 20px;
+}
+
+/* Add this to the parent div that contains your title and buttons */
+.title-container {
+  display: flex;
+  align-items: center;
+  margin-bottom: 20px;
+  padding-top: 0;
+}
+
+.title-container h2,
+.title-container h3 {
+  margin: 0;
+  margin-right: 15px;
+}
+
+/* Fix buttons alignment */
+.btn-container {
+  display: flex;
+  gap: 10px;
+}

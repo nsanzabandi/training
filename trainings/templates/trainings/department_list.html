@@ -1,0 +1,74 @@
+{% extends 'base.html' %}
+{% load static %}
+
+{% block title %}Departments{% endblock %}
+
+{% block content %}
+<div class="d-flex">
+  {% include 'trainings/sidebar.html' %}
+
+  <div class="main-content px-4 pt-4 w-100">
+    <!-- Header and Navigation -->
+    <div class="row align-items-center mb-4">
+      <div class="col-md-4 text-start">
+        <a href="{% url 'dashboard' %}" class="btn btn-primary">
+          <i class="fas fa-arrow-circle"></i> Back
+        </a>
+      </div>
+      <div class="col-md-4 text-center">
+        <h3 class="mb-0">Departments</h3>
+      </div>
+      <div class="col-md-4 text-end">
+        <a href="{% url 'department_create' %}" class="btn btn-primary">
+          <i class="fas fa-plus-circle"></i> Add New Department
+        </a>
+      </div>
+    </div>
+
+    <!-- Search -->
+    <form method="get" class="mb-3 d-flex justify-content-center">
+      <div class="input-group input-group-sm" style="max-width: 400px; width: 100%;">
+        <input type="text" name="q" class="form-control" placeholder="Search department by name..." value="{{ request.GET.q }}">
+        <button class="btn btn-outline-secondary" type="submit">Search</button>
+      </div>
+    </form>
+
+    <!-- Table or Empty -->
+    {% if departments %}
+    <div class="table-responsive">
+      <table class="table table-bordered table-sm">
+        <thead class="table-light">
+          <tr>
+            <th>#ID</th>
+            <th>Department Name</th>
+            <th>Actions</th>
+          </tr>
+        </thead>
+        <tbody>
+          {% for dept in departments %}
+          <tr>
+            <td>{{ dept.id }}</td>
+            <td>{{ dept.name }}</td>
+            <td>
+              <a href="{% url 'department_edit' dept.pk %}" class="btn btn-sm btn-info">
+                <i class="fas fa-edit"></i>
+              </a>
+              <a href="{% url 'department_delete' dept.pk %}" class="btn btn-sm btn-danger">
+                <i class="fas fa-trash"></i>
+              </a>
+            </td>
+          </tr>
+          {% endfor %}
+        </tbody>
+      </table>
+    </div>
+    {% else %}
+    <div class="text-center py-4">
+      <i class="fas fa-building fa-3x text-muted mb-3"></i>
+      <h4>No departments found</h4>
+      <p>Create a new department using the "Add New Department" button above.</p>
+    </div>
+    {% endif %}
+  </div>
+</div>
+{% endblock %}

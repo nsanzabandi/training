@@ -1,0 +1,82 @@
+{% extends 'base.html' %}
+{% load static %}
+{% load form_extras %}
+
+{% block title %}{{ editing|default:False|yesno:"Edit,Create" }} Staff{% endblock %}
+
+{% block content %}
+<div class="container py-4">
+  <div class="row justify-content-center">
+    <div class="col-lg-10">
+      <div class="card shadow-sm">
+        <div class="card-header bg-white border-bottom">
+          <h4 class="mb-0">{{ editing|default:False|yesno:"Edit,Create" }} Staff Account</h4>
+        </div>
+
+        <div class="card-body">
+          <form method="post" novalidate>
+            {% csrf_token %}
+
+            <!-- 👤 User Credentials -->
+            <fieldset class="mb-4">
+              <legend class="fw-bold text-primary">👤 User Credentials</legend>
+              <div class="row g-3">
+                <div class="col-md-4">
+                  {{ user_form.username.label_tag }}
+                  {{ user_form.username|add_class:"form-control" }}
+                </div>
+                <div class="col-md-4">
+                  {{ user_form.password1.label_tag }}
+                  {{ user_form.password1|add_class:"form-control" }}
+                </div>
+                <div class="col-md-4">
+                  {{ user_form.password2.label_tag }}
+                  {{ user_form.password2|add_class:"form-control" }}
+                </div>
+              </div>
+            </fieldset>
+
+            <!-- 📋 Staff Profile Info -->
+            <fieldset class="mb-4">
+              <legend class="fw-bold text-primary">📋 Staff Profile</legend>
+              <div class="row g-3">
+                <div class="col-md-6">
+                  {{ staff_form.department.label_tag }}
+                  {{ staff_form.department|add_class:"form-control" }}
+                </div>
+                <div class="col-md-6">
+                  {{ staff_form.role.label_tag }}
+                  {{ staff_form.role|add_class:"form-control" }}
+                </div>
+                <div class="col-md-6">
+                  {{ staff_form.contact_number.label_tag }}
+                  {{ staff_form.contact_number|add_class:"form-control" }}
+                </div>
+                <div class="col-md-6">
+                  {{ staff_form.position.label_tag }}
+                  {{ staff_form.position|add_class:"form-control" }}
+                </div>
+                <div class="col-md-6 mt-2">
+                  <div class="form-check">
+                    {{ staff_form.active|add_class:"form-check-input" }}
+                    {{ staff_form.active.label_tag }}
+                  </div>
+                </div>
+              </div>
+            </fieldset>
+
+            <!-- ✅ Buttons -->
+            <div class="d-flex justify-content-between mt-4">
+              <a href="{% url 'staff_list' %}" class="btn btn-secondary">Cancel</a>
+              <button type="submit" class="btn btn-primary">
+                {{ editing|default:False|yesno:"Update,Save" }}
+              </button>
+            </div>
+
+          </form>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+{% endblock %}

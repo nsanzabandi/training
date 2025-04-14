@@ -1,0 +1,105 @@
+{% extends 'base.html' %}
+{% block title %}Attendee Report{% endblock %}
+
+{% block content %}
+<div class="d-flex">
+  {% include 'trainings/sidebar.html' %}
+
+  <div class="main-content px-4 pt-4 w-100">
+    <!-- ✅ Flash Messages -->
+    {% if messages %}
+      <div class="mb-3">
+        {% for message in messages %}
+          <div class="alert alert-{{ message.tags }} alert-dismissible fade show" role="alert">
+            {{ message }}
+            <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+          </div>
+        {% endfor %}
+      </div>
+    {% endif %}
+
+    <!-- ✅ Page Header -->
+    <div class="row align-items-center mb-4">
+      <div class="col-md-4 text-start">
+        <a href="{% url 'dashboard' %}" class="btn btn-primary">
+          <i class="fas fa-arrow-left"></i> Back
+        </a>
+      </div>
+      <div class="col-md-4 text-center">
+        <h3 class="mb-0">📋 Attendee Report</h3>
+      </div>
+      <div class="col-md-4 text-end">
+        <!-- Empty space for alignment -->
+      </div>
+    </div>
+
+    <!-- ✅ Filters -->
+    <form method="get" class="row g-3 mb-4">
+      <div class="col-md-4">
+        <label for="training" class="form-label">Filter by Training</label>
+        <select name="training" id="training" class="form-select form-select-sm">
+          <option value="">All Trainings</option>
+          {% for training in trainings %}
+            <option value="{{ training.id }}" {% if training.id|stringformat:"s" == selected_training %}selected{% endif %}>
+              {{ training.title }}
+            </option>
+          {% endfor %}
+        </select>
+      </div>
+
+      <div class="col-md-4">
+        <label for="department" class="form-label">Filter by Department</label>
+        <select name="department" id="department" class="form-select form-select-sm">
+          <option value="">All Departments</option>
+          {% for dept in departments %}
+            <option value="{{ dept.id }}" {% if dept.id|stringformat:"s" == selected_department %}selected{% endif %}>
+              {{ dept.name }}
+            </option>
+          {% endfor %}
+        </select>
+      </div>
+
+      <div class="col-md-4 d-flex align-items-end">
+        <button type="submit" class="btn btn-primary btn-sm me-2">Apply Filters</button>
+        <button type="submit" name="export" value="csv" class="btn btn-success btn-sm">Download CSV</button>
+      </div>
+    </form>
+
+    <!-- ✅ Table or Empty State -->
+    {% if enrollments %}
+      <div class="table-responsive">
+        <table class="table table-bordered table-sm">
+          <thead class="table-light">
+            <tr>
+              <th>Participant</th>
+              <th>Email</th>
+              <th>Department</th>
+              <th>Training</th>
+              <th>Start Date</th>
+              <th>End Date</th>
+            </tr>
+          </thead>
+          <tbody>
+            {% for e in enrollments %}
+            <tr>
+              <td>{{ e.participant.full_name }}</td>
+              <td>{{ e.participant.email }}</td>
+              <td>{{ e.participant.department }}</td>
+              <td>{{ e.training.title }}</td>
+              <td>{{ e.training.start_date }}</td>
+              <td>{{ e.training.end_date }}</td>
+            </tr>
+            {% endfor %}
+          </tbody>
+        </table>
+      </div>
+    {% else %}
+      <div class="text-center py-4">
+        <i class="fas fa-user-times fa-3x text-muted mb-3"></i>
+        <h4>No attendees found</h4>
+        <p>Try adjusting the filters or check other trainings.</p>
+      </div>
+    {% endif %}
+  </div>
+</div>
+{% endblock %}

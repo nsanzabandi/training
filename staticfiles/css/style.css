@@ -1,0 +1,45 @@
+body {
+  background-color: #f8f9fa;
+  font-family: "Arial", sans-serif;
+}
+.navbar-brand {
+  font-weight: bold;
+  font-size: 1.5rem;
+}
+.card {
+  border-radius: 10px;
+  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+  margin-bottom: 20px;
+}
+.dashboard-metric {
+  font-size: 2rem;
+  font-weight: bold;
+  color: #007bff;
+}
+.table th {
+  background-color: #e9ecef;
+  font-weight: 600;
+}
+.btn-primary {
+  background-color: #007bff;
+  border-color: #007bff;
+  transition: background-color 0.3s;
+}
+.btn-primary:hover {
+  background-color: #0056b3;
+}
+.btn-success {
+  transition: background-color 0.3s;
+}
+.btn-success:hover {
+  background-color: #218838;
+}
+.form-control {
+  border-radius: 5px;
+}
+.navbar-dark {
+  background-color: #343a40;
+}
+.alert {
+  border-radius: 5px;
+}

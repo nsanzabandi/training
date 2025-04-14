@@ -1,0 +1,109 @@
+{% extends 'base.html' %}
+{% load form_extras %}
+{% block title %}Create Training{% endblock %}
+
+{% block content %}
+{% include 'trainings/sidebar.html' %}
+
+<div class="container py-4">
+  <div class="row justify-content-center">
+    <div class="col-md-10 col-lg-8">
+      <div class="card shadow-sm border-0">
+        <div class="card-header text-center bg-light">
+          <h5 class="text-muted mb-0">📝 Create New Training</h5>
+        </div>
+        <div class="card-body">
+
+          {% if form.non_field_errors %}
+            <div class="alert alert-danger">
+              {{ form.non_field_errors }}
+            </div>
+          {% endif %}
+
+          <!-- ✅ Add enctype for file upload -->
+          <form method="post" enctype="multipart/form-data">
+            {% csrf_token %}
+            <div class="row g-3">
+
+              <div class="col-md-6">
+                {{ form.title.label_tag }} 
+                {{ form.title|add_class:"form-control" }}
+              </div>
+
+              <div class="col-md-6">
+                {{ form.department.label_tag }}
+                {{ form.department|add_class:"form-select" }}
+              </div>
+
+              <div class="col-md-6">
+                {{ form.coordinator.label_tag }}
+                {{ form.coordinator|add_class:"form-select" }}
+              </div>
+
+              <div class="col-md-6">
+                {{ form.start_date.label_tag }}
+                <div class="input-group">
+                  {{ form.start_date|add_class:"form-control" }}
+                  <span class="input-group-text"><i class="fas fa-calendar-alt"></i></span>
+                </div>
+              </div>
+
+              <div class="col-md-6">
+                {{ form.end_date.label_tag }}
+                <div class="input-group">
+                  {{ form.end_date|add_class:"form-control" }}
+                  <span class="input-group-text"><i class="fas fa-calendar-alt"></i></span>
+                </div>
+              </div>
+
+              <div class="col-md-6">
+                {{ form.start_time.label_tag }}
+                <div class="input-group">
+                  {{ form.start_time|add_class:"form-control" }}
+                  <span class="input-group-text"><i class="fas fa-clock"></i></span>
+                </div>
+              </div>
+
+              <div class="col-md-6">
+                {{ form.end_time.label_tag }}
+                <div class="input-group">
+                  {{ form.end_time|add_class:"form-control" }}
+                  <span class="input-group-text"><i class="fas fa-clock"></i></span>
+                </div>
+              </div>
+
+              <div class="col-12">
+                {{ form.description.label_tag }}
+                {{ form.description|add_class:"form-control" }}
+              </div>
+
+              <div class="col-md-6">
+                {{ form.location.label_tag }}
+                {{ form.location|add_class:"form-control" }}
+              </div>
+
+              <div class="col-md-6">
+                {{ form.max_capacity.label_tag }}
+                {{ form.max_capacity|add_class:"form-control" }}
+              </div>
+
+              <!-- ✅ New Concept Note Upload Field -->
+              <div class="col-md-12">
+                {{ form.concept_note.label_tag }}
+                {{ form.concept_note|add_class:"form-control" }}
+              </div>
+
+            </div>
+
+            <div class="d-flex justify-content-between mt-4">
+              <button type="submit" class="btn btn-success">Save Training</button>
+              <a href="{% url 'training_list' %}" class="btn btn-outline-secondary">Cancel</a>
+            </div>
+          </form>
+
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+{% endblock %}

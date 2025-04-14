@@ -1,0 +1,160 @@
+{% extends 'base.html' %}
+{% load custom_tags %}
+{% load static %}
+
+{% block title %}Regular User Dashboard{% endblock %}
+
+{% block content %}
+<div class="d-flex">
+  {% include 'trainings/sidebar.html' %}
+
+  <div class="main-content px-4 pt-4 w-100">
+
+    <!-- ✅ Page Header -->
+    <div class="row align-items-center mb-4">
+      <div class="col-md-6">
+        <h3 class="mb-0">Regular User Dashboard</h3>
+        <small class="text-muted">Overview of assigned and available trainings</small>
+      </div>
+      <div class="col-md-6 text-end">
+        <span class="text-muted">Today: {{ current_date }}</span>
+      </div>
+    </div>
+
+    <!-- ✅ Statistic Cards -->
+    <div class="stats-cards mb-4">
+      <div class="stat-card">
+        <div class="stat-info">
+          <h6>Total Trainings</h6>
+          <h3>{{ total_trainings }}</h3>
+        </div>
+        <div class="stat-icon">
+          <i class="fas fa-calendar-alt"></i>
+        </div>
+      </div>
+      <div class="stat-card">
+        <div class="stat-info">
+          <h6>Pending Trainings</h6>
+          <h3>{{ pending_trainings }}</h3>
+        </div>
+        <div class="stat-icon">
+          <i class="fas fa-clock"></i>
+        </div>
+      </div>
+      <div class="stat-card">
+        <div class="stat-info">
+          <h6>Total Participants</h6>
+          <h3>{{ total_participants }}</h3>
+        </div>
+        <div class="stat-icon">
+          <i class="fas fa-users"></i>
+        </div>
+      </div>
+      <div class="stat-card">
+        <div class="stat-info">
+          <h6>Confirmed Enrollments</h6>
+          <h3>{{ total_confirmed }}</h3>
+        </div>
+        <div class="stat-icon">
+          <i class="fas fa-check-circle"></i>
+        </div>
+      </div>
+    </div>
+
+    <!-- ✅ Trainings Table -->
+    <div class="card mb-4">
+      <div class="card-header">
+        <h4>Registered Trainings</h4>
+      </div>
+      <div class="card-body">
+        {% if trainings %}
+        <div class="table-responsive">
+          <table class="table table-bordered table-sm table-hover">
+            <thead class="table-light">
+              <tr>
+                <th>Title</th>
+                <th>Department</th>
+                <th>Start</th>
+                <th>End</th>
+                <th>Status</th>
+              </tr>
+            </thead>
+            <tbody>
+              {% for training in trainings %}
+              <tr>
+                <td>{{ training.title }}</td>
+                <td>{{ training.department }}</td>
+                <td>{{ training.start_date }}</td>
+                <td>{{ training.end_date }}</td>
+                <td>
+                  {% if training.status == 'approved' %}
+                    <span class="badge bg-success">{{ training.status|title }}</span>
+                  {% elif training.status == 'pending' %}
+                    <span class="badge bg-warning text-dark">{{ training.status|title }}</span>
+                  {% elif training.status == 'rejected' %}
+                    <span class="badge bg-danger">{{ training.status|title }}</span>
+                  {% else %}
+                    <span class="badge bg-secondary">{{ training.status|title }}</span>
+                  {% endif %}
+                </td>
+              </tr>
+              {% endfor %}
+            </tbody>
+          </table>
+        </div>
+        {% else %}
+          <div class="text-center py-4">
+            <i class="fas fa-calendar-alt fa-2x text-muted mb-2"></i>
+            <p>No trainings available for you at the moment.</p>
+          </div>
+        {% endif %}
+      </div>
+    </div>
+
+    <!-- ✅ Chart Section -->
+    <div class="card">
+      <div class="card-header">
+        <h4>Confirmed Enrollments Chart</h4>
+      </div>
+      <div class="card-body">
+        <canvas id="enrollmentChart" height="300"></canvas>
+      </div>
+    </div>
+
+  </div>
+</div>
+
+<!-- Chart.js -->
+<script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+<script>
+  const ctx = document.getElementById('enrollmentChart').getContext('2d');
+  const enrollmentChart = new Chart(ctx, {
+    type: 'bar',
+    data: {
+      labels: {{ chart_labels|safe }},
+      datasets: [{
+        label: 'Confirmed Enrollments',
+        data: {{ chart_data|safe }},
+        backgroundColor: '#6c5ce7',
+        borderRadius: 6,
+      }]
+    },
+    options: {
+      responsive: true,
+      plugins: {
+        legend: { display: false },
+        title: { display: false }
+      },
+      scales: {
+        y: {
+          beginAtZero: true,
+          grid: { color: 'rgba(0, 0, 0, 0.05)' }
+        },
+        x: {
+          grid: { display: false }
+        }
+      }
+    }
+  });
+</script>
+{% endblock %}

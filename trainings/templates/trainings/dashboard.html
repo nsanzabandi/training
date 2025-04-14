@@ -1,0 +1,21 @@
+{% extends 'trainings/base.html' %}
+{% load static %}
+
+{% block title %}Dashboard{% endblock %}
+
+{% block content %}
+<h1 class="mb-4">My Dashboard</h1>
+
+{% if is_admin %}
+    {% include 'trainings/dashboard_admin.html' %}
+{% elif staff.role == 'creator' %}
+    {% include 'trainings/dashboard_creator.html' %}
+{% elif staff.role == 'registrar' %}
+    {% include 'trainings/dashboard_registrar.html' %}
+{% elif staff.role == 'manager' %}
+    {% include 'trainings/dashboard_manager.html' %}
+{% else %}
+    <div class="alert alert-info">You do not have a specific role assigned yet. Please contact the administrator.</div>
+{% endif %}
+
+{% endblock %}

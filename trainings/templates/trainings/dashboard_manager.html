@@ -1,0 +1,39 @@
+<div class="card mb-4">
+    <div class="card-body">
+      <h5 class="card-title">Welcome, {{ staff.first_name }} {{ staff.last_name }}</h5>
+      <p>Role: <strong>{{ staff.get_role_display }}</strong> | Department: {{ staff.department }}</p>
+    </div>
+  </div>
+  
+  <div class="card">
+    <div class="card-body">
+      <h5 class="card-title">Trainings to Manage Attendance</h5>
+      <table class="table table-hover">
+        <thead>
+          <tr>
+            <th>Title</th>
+            <th>Date</th>
+            <th>Location</th>
+            <th>Actions</th>
+          </tr>
+        </thead>
+        <tbody>
+          {% for training in filtered_trainings %}
+          <tr>
+            <td>{{ training.title }}</td>
+            <td>{{ training.date }}</td>
+            <td>{{ training.location }}</td>
+            <td>
+              <a href="{% url 'trainings:staff_attendance' training.id %}" class="btn btn-sm btn-primary">Register Attendance</a>
+            </td>
+          </tr>
+          {% empty %}
+          <tr>
+            <td colspan="4">No upcoming trainings for attendance management.</td>
+          </tr>
+          {% endfor %}
+        </tbody>
+      </table>
+    </div>
+  </div>
+  

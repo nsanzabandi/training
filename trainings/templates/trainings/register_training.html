@@ -1,0 +1,19 @@
+{% extends 'trainings/base.html' %}
+{% load static %}
+{% block title %}Register for {{ training.title }}{% endblock %}
+{% block content %}
+<h1 class="mb-4">Register for {{ training.title }}</h1>
+<div class="card">
+    <div class="card-body">
+        <p><strong>Date:</strong> {{ training.date }}</p>
+        <p><strong>Location:</strong> {{ training.location }}</p>
+        <p><strong>Trainer:</strong> {{ training.trainer }}</p>
+        <p><strong>Description:</strong> {{ training.description|default:"No description provided." }}</p>
+        <form method="post">
+            {% csrf_token %}
+            <button type="submit" class="btn btn-success">Confirm Registration</button>
+            <a href="{% url 'trainings:training_list' %}" class="btn btn-secondary">Cancel</a>
+        </form>
+    </div>
+</div>
+{% endblock %}

@@ -1,0 +1,83 @@
+{% extends 'base.html' %}
+{% block title %}Participant Detail{% endblock %}
+
+{% block content %}
+<div class="d-flex">
+  {% include 'trainings/sidebar.html' %}
+
+  <div class="main-content px-4 pt-4 w-100">
+
+    <!-- ✅ Header -->
+    <div class="d-flex justify-content-between align-items-center mb-4">
+      <div>
+        <h4 class="mb-0">Participant Detail</h4>
+        <small class="text-muted">{{ participant.full_name }}</small>
+      </div>
+      <a href="{% url 'participant_pdf_report' participant.id %}" target="_blank" class="btn btn-dark">
+        <i class="fas fa-download"></i> Download Report
+      </a>
+    </div>
+
+    <!-- ✅ Participant Info Card -->
+    <div class="card mb-4">
+      <div class="card-header bg-light fw-semibold">Personal Information</div>
+      <div class="card-body">
+        <p><strong>Email:</strong> {{ participant.email }}</p>
+        <p><strong>Phone:</strong> {{ participant.phone }}</p>
+        <p><strong>Department:</strong> {{ participant.department }}</p>
+        <p><strong>Position:</strong> {{ participant.position }}</p>
+      </div>
+    </div>
+
+    <!-- ✅ Training History -->
+    <div class="card">
+      <div class="card-header bg-light fw-semibold">Training History</div>
+      <div class="card-body">
+        {% if enrollments %}
+        <div class="table-responsive">
+          <table class="table table-bordered table-hover table-sm">
+            <thead class="table-light">
+              <tr>
+                <th>Training</th>
+                <th>Confirmation</th>
+                <th>Attendance</th>
+              </tr>
+            </thead>
+            <tbody>
+              {% for e in enrollments %}
+              <tr>
+                <td>{{ e.training.title }}</td>
+                <td>
+                  {% if e.confirmation_status == "confirmed" %}
+                    <span class="badge bg-success">Confirmed</span>
+                  {% elif e.confirmation_status == "pending" %}
+                    <span class="badge bg-warning text-dark">Pending</span>
+                  {% elif e.confirmation_status == "declined" %}
+                    <span class="badge bg-danger">Declined</span>
+                  {% else %}
+                    <span class="badge bg-secondary">{{ e.confirmation_status|title }}</span>
+                  {% endif %}
+                </td>
+                <td>
+                  {% if e.attendance_status == "attended" %}
+                    <span class="badge bg-success">Attended</span>
+                  {% elif e.attendance_status == "absent" %}
+                    <span class="badge bg-danger">Absent</span>
+                  {% else %}
+                    <span class="badge bg-secondary">Not Marked</span>
+                  {% endif %}
+                </td>
+              </tr>
+              {% endfor %}
+            </tbody>
+          </table>
+        </div>
+        {% else %}
+        <p class="text-muted">No training history available for this participant.</p>
+        {% endif %}
+      </div>
+    </div>
+
+  </div>
+</div>
+{% endblock %}

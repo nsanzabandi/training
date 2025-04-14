@@ -1,0 +1,112 @@
+{% load static %}
+<div class="sidebar">
+  <div class="logo">
+    <img src="{% static 'img/logo1.png' %}" alt="Logo" width="150" height="120">
+  </div>
+
+  <div class="user-info">
+    <div class="avatar">
+      <img src="https://via.placeholder.com/50" alt="User avatar">
+    </div>
+    <div class="user-details">
+      <h5>{{ staff.user.get_full_name }}</h5>
+      <span class="badge bg-primary">{{ staff.role|title }}</span>
+    </div>
+  </div>
+
+  <div class="menu">
+    <ul>
+      <li class="active">
+        <a href="{% url 'dashboard' %}">
+          <i class="fas fa-tachometer-alt"></i>
+          <span>Dashboard</span>
+        </a>
+      </li>
+
+      <!-- ✅ Common to all roles -->
+
+      {% if staff.role == 'admin' %}
+      <li>
+        <a href="{% url 'training_list' %}">
+          <i class="fas fa-chalkboard-teacher"></i>
+          <span>Manage Trainings</span>
+        </a>
+      </li>
+        <!-- ✅ Admin-specific links -->
+        <li>
+          <a href="{% url 'participant_list' %}">
+            <i class="fas fa-users"></i>
+            <span>Manage Participants</span>
+          </a>
+        </li>
+        <li>
+          <a href="{% url 'staff_list' %}">
+            <i class="fas fa-user-tie"></i>
+            <span>Manage Staff</span>
+          </a>
+        </li>
+        <li>
+          <a href="{% url 'department_list' %}">
+            <i class="fas fa-building"></i>
+            <span>Manage Departments</span>
+          </a>
+        </li>
+        <li>
+          <a href="{% url 'enrollment_list' %}">
+            <i class="fas fa-clipboard-list"></i>
+            <span>Manage Enrollments</span>
+          </a>
+        </li>
+        <li>
+          <a href="{% url 'attendee_report' %}">
+            <i class="fas fa-file-alt"></i>
+            <span>Attendee Report</span>
+          </a>
+        </li>
+
+      {% elif staff.role == 'supervisor' %}
+        <!-- ✅ Supervisor-specific links -->
+        <li>
+          <a href="{% url 'supervisor_dashboard' %}">
+            <i class="fas fa-eye"></i>
+            <span>Trainings Assigned</span>
+          </a>
+        </li>
+
+      {% elif staff.role == 'regular' %}
+        <!-- ✅ Regular user-specific links -->
+        <li>
+          <a href="{% url 'training_list' %}">
+            <i class="fas fa-chalkboard-teacher"></i>
+            <span>Manage Trainings</span>
+          </a>
+        </li>
+        <li>
+          <a href="{% url 'participant_list' %}">
+            <i class="fas fa-users"></i>
+            <span>Participants</span>
+          </a>
+        </li>
+        <li>
+          <a href="{% url 'enrollment_list' %}">
+            <i class="fas fa-clipboard-list"></i>
+            <span>Enrollments</span>
+          </a>
+        </li>
+        <li>
+          <a href="{% url 'my_training_report' %}">
+            <i class="fas fa-users"></i>
+            <span>Report</span>
+          </a>
+        </li>
+      {% endif %}
+
+      <li>
+        <a href="{% url 'logout' %}">
+          <i class="fas fa-sign-out-alt"></i>
+          <span>Logout</span>
+        </a>
+      </li>
+    </ul>
+  </div>
+</div>

@@ -1,0 +1,9 @@
+Hello,
+
+You are invited to attend the training: {{ training.title }}
+Date: {{ training.date }}
+Location: {{ training.location }}
+
+Sent by: {{ sender.get_full_name }}
+
+Thank you!

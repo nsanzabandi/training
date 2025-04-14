@@ -1,0 +1,88 @@
+{% extends 'base.html' %}
+{% block title %}Enrollments{% endblock %}
+
+{% block content %}
+<div class="d-flex">
+  {% include 'trainings/sidebar.html' %}
+
+  <div class="main-content px-4 pt-4 w-100">
+    <!-- Header Section -->
+    <div class="row align-items-center mb-4">
+      <div class="col-md-4 text-start">
+        <a href="{% url 'dashboard' %}" class="btn btn-primary">
+          <i class="fas fa-arrow-circle"></i> Back
+        </a>
+      </div>
+      <div class="col-md-4 text-center">
+        <h3 class="mb-0">Enrollments</h3>
+      </div>
+      <div class="col-md-4 text-end">
+        <a href="{% url 'enrollment_create' %}" class="btn btn-primary">
+          <i class="fas fa-user-plus"></i> Enroll Participant
+        </a>
+      </div>
+    </div>
+
+    <!-- Search Form -->
+    <form method="get" class="mb-3 d-flex justify-content-center">
+      <div class="input-group input-group-sm" style="max-width: 400px; width: 100%;">
+        <input type="text" name="q" class="form-control" placeholder="Search by participant or training..." value="{{ request.GET.q }}">
+        <button class="btn btn-outline-secondary" type="submit">Search</button>
+      </div>
+    </form>
+
+    <!-- Table or Empty State -->
+    {% if enrollments %}
+    <div class="table-responsive">
+      <table class="table table-bordered table-sm">
+        <thead class="table-light">
+          <tr>
+            <th>Participant</th>
+            <th>Training</th>
+            <th>Confirmation</th>
+            <th>Attendance</th>
+            <th>Enrolled By</th>
+            <th>Actions</th>
+          </tr>
+        </thead>
+        <tbody>
+          {% for e in enrollments %}
+          <tr>
+            <td>{{ e.participant.full_name }}</td>
+            <td>{{ e.training.title }}</td>
+            <td>
+              {% if e.confirmation_status == 'confirmed' %}
+                <span class="badge bg-success">Confirmed</span>
+              {% elif e.confirmation_status == 'pending' %}
+                <span class="badge bg-warning text-dark">Pending</span>
+              {% elif e.confirmation_status == 'declined' %}
+                <span class="badge bg-danger">Declined</span>
+              {% else %}
+                <span class="badge bg-secondary">{{ e.confirmation_status|title }}</span>
+              {% endif %}
+            </td>
+            <td>{{ e.attendance_status|title }}</td>
+            <td>{{ e.enrolled_by.username }}</td>
+            <td>
+              <a href="#" class="btn btn-sm btn-info" title="Edit">
+                <i class="fas fa-edit"></i>
+              </a>
+              <a href="#" class="btn btn-sm btn-danger" title="Delete">
+                <i class="fas fa-trash"></i>
+              </a>
+            </td>
+          </tr>
+          {% endfor %}
+        </tbody>
+      </table>
+    </div>
+    {% else %}
+    <div class="text-center py-4">
+      <i class="fas fa-clipboard-list fa-3x text-muted mb-3"></i>
+      <h4>No enrollments found</h4>
+      <p>Add your first enrollment using the "Enroll Participant" button above.</p>
+    </div>
+    {% endif %}
+  </div>
+</div>
+{% endblock %}

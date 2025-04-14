@@ -1,0 +1,75 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <style>
+        body { font-family: Arial, sans-serif; font-size: 12px; }
+        h2 { text-align: center; margin-bottom: 20px; }
+        table { width: 100%; border-collapse: collapse; margin-top: 10px; }
+        th, td { border: 1px solid #ccc; padding: 8px; text-align: left; }
+        th { background-color: #f2f2f2; }
+        .header-logo { width: 120px; margin-bottom: 10px; }
+        .qr-code { text-align: center; margin-top: 30px; font-size: 10px; }
+    </style>
+</head>
+<body>
+
+    {% load static %}
+
+    <!-- ✅ Organization Logo -->
+    <div style="text-align: center;">
+        <img src="{% static 'img/logo.png' %}" class="header-logo" alt="Organization Logo">
+    </div>
+
+    <h2>Participant Training Report</h2>
+
+    <p><strong>Name:</strong> {{ participant.full_name }}</p>
+    <p><strong>Email:</strong> {{ participant.email }}</p>
+    <p><strong>Phone:</strong> {{ participant.phone }}</p>
+    <p><strong>Department:</strong> {{ participant.department }}</p>
+    <p><strong>Position:</strong> {{ participant.position }}</p>
+
+    <h4>Training History</h4>
+    <table>
+        <thead>
+            <tr>
+                <th>Training Title</th>
+                <th>Department</th>
+                <th>Start Date</th>
+                <th>End Date</th>
+                <th>Total Days</th>
+                <th>Attendance</th>
+            </tr>
+        </thead>
+        <tbody>
+            {% for e in enrollments %}
+            <tr>
+                <td>{{ e.training.title }}</td>
+                <td>{{ e.training.department }}</td>
+                <td>{{ e.training.start_date }}</td>
+                <td>{{ e.training.end_date }}</td>
+                <td>{{ e.total_days }} days</td>
+                <td>{{ e.attendance_status|title }}</td>
+            </tr>
+            {% endfor %}
+        </tbody>
+    </table>
+
+    <!-- ✅ Supervisor Info -->
+    <div style="margin-top: 30px;">
+        {% if enrollments and enrollments.0.training.coordinator %}
+            <p><strong>Supervisor:</strong> {{ enrollments.0.training.coordinator}}</p>
+        {% else %}
+            <p><strong>Supervisor:</strong> Not Assigned</p>
+        {% endif %}
+    </div>
+
+    <!-- ✅ QR Code Below Supervisor -->
+    {% if qr_code_path %}
+    <div class="qr-code">
+        <img src="{{ qr_code_path }}" width="90" height="90" alt="QR Code"><br>
+        <span>Scan to verify</span>
+    </div>
+    {% endif %}
+
+</body>
+</html>

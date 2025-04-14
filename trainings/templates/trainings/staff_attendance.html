@@ -1,0 +1,58 @@
+{% extends 'trainings/base.html' %}
+{% load static %}
+{% block title %}{{ training.title }} Attendance{% endblock %}
+{% block content %}
+{% include 'trainings/sidebar_supervisor.html' %}
+<h1 class="mb-4">{{ training.title }} - {{ training.start_date }}</h1>
+{% if messages %}
+  <ul class="messages">
+    {% for message in messages %}
+      <li>{{ message }}</li>
+    {% endfor %}
+  </ul>
+{% endif %}
+{% if is_admin %}
+<div class="card mb-4">
+  <div class="card-body">
+    <h5 class="card-title">Add Attendance</h5>
+    <form method="post">
+      {% csrf_token %}
+      {{ form.as_p }}
+      <button type="submit" class="btn btn-primary">Add Attendance</button>
+    </form>
+  </div>
+</div>
+{% endif %}
+<div class="card">
+  <div class="card-body">
+    <h5 class="card-title">Attendance Details</h5>
+    <table class="table table-hover">
+      <thead>
+        <tr>
+          <th>Participant</th>
+          <th>Department</th>
+          <th>Status</th>
+          <th>Attended</th>
+          <th>Notes</th>
+        </tr>
+      </thead>
+      <tbody>
+        {% for record in attendance %}
+        <tr>
+          <td>{{ record.participant.full_name|default:"Unknown" }}</td>
+          <td>{{ record.participant.staff_profile.department|default:"-" }}</td>
+          <td>{{ record.get_status_display }}</td>
+          <td>{% if record.attended %}Yes{% else %}No{% endif %}</td>
+          <td>{{ record.notes|default:"-" }}</td>
+        </tr>
+        {% empty %}
+        <tr>
+          <td colspan="5">No attendance recorded.</td>
+        </tr>
+        {% endfor %}
+      </tbody>
+    </table>
+  </div>
+</div>
+<a href="{% url 'trainings:training_list' %}" class="btn btn-secondary mt-3">Back to Trainings</a>
+{% endblock %}
