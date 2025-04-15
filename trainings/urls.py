@@ -7,6 +7,7 @@ from django.contrib.auth import views as auth_views
 
 urlpatterns = [
     path('', views.dashboard, name='dashboard'),
+    path('logout/', views.custom_logout, name='custom_logout'),
 
     # ✅ These should exist for the dashboard to work
     path('trainings/', views.training_list, name='training_list'),

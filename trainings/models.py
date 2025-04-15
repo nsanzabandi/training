@@ -17,16 +17,15 @@ class Staff(models.Model):
     )
 
     user = models.OneToOneField(User, on_delete=models.CASCADE)
-    email = models.EmailField(null=True, blank=True)  # Optional: store separately
-    role = models.CharField(max_length=10, choices=ROLE_CHOICES, null=True, blank=True)
-    department = models.ForeignKey(Department, on_delete=models.SET_NULL, null=True, blank=True)
-    contact_number = models.CharField(max_length=15, blank=True, null=True)
-    position = models.CharField(max_length=100, blank=True, null=True)
+    department = models.ForeignKey('Department', on_delete=models.SET_NULL, null=True, blank=True)
+    role = models.CharField(max_length=50, choices=ROLE_CHOICES, null=True, blank=True)
+    active = models.BooleanField(default=False)
     profile_picture = models.ImageField(upload_to='profile_pics/', null=True, blank=True)
-    active = models.BooleanField(default=False)  # Inactive until admin approval
+    contact_number = models.CharField(max_length=20, blank=True)
+    position = models.CharField(max_length=100, blank=True)
 
     def __str__(self):
-        return f"{self.user.get_full_name()} - {self.role.capitalize() if self.role else 'Pending'}"
+        return f"{self.user.username} ({self.role})"
 
 
 

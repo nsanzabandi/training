@@ -1,9 +1,13 @@
 {% extends 'base.html' %}
 {% block title %}Pending Approval{% endblock %}
+
 {% block content %}
-<div class="container py-5 text-center">
+<div class="container text-center py-5">
+  <i class="fas fa-hourglass-half fa-3x text-warning mb-3"></i>
   <h2>Your account is pending approval</h2>
-  <p>Please wait for the administrator to activate your access.</p>
-  <a href="{% url 'logout' %}" class="btn btn-secondary">Logout</a>
+  <p class="lead">Thank you for registering. An administrator needs to approve your account before you can access the system.</p>
+  <p>If you believe this is a mistake or need urgent access, please contact the administrator.</p>
+  <a href="{% url 'custom_logout' %}" class="btn btn-outline-secondary mt-3">Logout</a>
 </div>
 {% endblock %}
+

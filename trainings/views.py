@@ -4,7 +4,8 @@ from django.contrib.auth.forms import UserCreationForm
 from django.contrib.auth import logout
 from django.contrib.auth.models import User
 from django.contrib import messages
-from django.core.mail import send_mail
+from django.core.mail import send_mail, BadHeaderError
+import smtplib
 from django.urls import reverse
 from django.utils.timezone import now
 from django.http import HttpResponse, FileResponse, Http404
@@ -12,6 +13,8 @@ from django.shortcuts import render, redirect, get_object_or_404
 from django.template.loader import get_template
 from django.conf import settings
 from django.db import IntegrityError
+from django.contrib.auth.forms import AuthenticationForm
+from django.contrib.auth import authenticate, login
 from django.db.models import Q
 
 import io, os, csv, qrcode
@@ -29,14 +32,20 @@ def dashboard(request):
     try:
         staff = request.user.staff
         if not staff.active or not staff.role:
+            messages.warning(request, "Your account is pending approval. Please wait for admin activation.")
             return redirect('pending_approval')
     except Staff.DoesNotExist:
-        staff = Staff.objects.create(
+        # Prevent auto-activation by assigning no role and inactive status
+        Staff.objects.create(
             user=request.user,
-            role='admin' if request.user.is_superuser else 'regular',
-            department='General'
+            role=None,
+            active=False,
+            department=None
         )
+        messages.warning(request, "Your account is pending approval. Please wait for admin activation.")
+        return redirect('pending_approval')
 
+    # Role-based training filtering
     if staff.role == 'admin':
         trainings = Training.objects.all()
     elif staff.role == 'supervisor':
@@ -49,15 +58,14 @@ def dashboard(request):
     if staff.role == 'regular':
         participants = participants.filter(department=staff.department)
 
-    training_stats = {}
-    for training in trainings:
-        confirmed = training.enrollment_set.filter(confirmation_status='confirmed').count()
-        pending = training.enrollment_set.filter(confirmation_status='pending').count()
-        training_stats[training.id] = {
-            'confirmed': confirmed,
-            'pending': pending,
-            'total': training.enrollment_set.count(),
+    training_stats = {
+        t.id: {
+            'confirmed': t.enrollment_set.filter(confirmation_status='confirmed').count(),
+            'pending': t.enrollment_set.filter(confirmation_status='pending').count(),
+            'total': t.enrollment_set.count()
         }
+        for t in trainings
+    }
 
     context = {
         'staff': staff,
@@ -377,6 +385,9 @@ def enrollment_list(request):
         'staff': staff
     })
 
+
+
+
 @login_required
 def enrollment_create(request):
     try:
@@ -397,18 +408,21 @@ def enrollment_create(request):
                 reverse('confirm_enrollment', args=[str(enrollment.invite_token)])
             )
 
-            send_mail(
-                subject='Training Confirmation',
-                message=f"""Dear {enrollment.participant.full_name},
+            try:
+                send_mail(
+                    subject='Training Confirmation',
+                    message=f"""Dear {enrollment.participant.full_name},
 
 Please confirm your attendance for '{enrollment.training.title}' by clicking the link below:
 {confirm_url}""",
-                from_email='noreply@yourdomain.com',
-                recipient_list=[enrollment.participant.email],
-                fail_silently=False,
-            )
+                    from_email=settings.DEFAULT_FROM_EMAIL,
+                    recipient_list=[enrollment.participant.email],
+                    fail_silently=False,
+                )
+                messages.success(request, 'Enrollment created and confirmation email sent.')
+            except (smtplib.SMTPException, BadHeaderError):
+                messages.warning(request, "Enrollment was saved, but we couldn’t send the confirmation email. Please verify the email address.")
 
-            messages.success(request, 'Enrollment created and confirmation email sent.')
             return redirect('enrollment_list')
     else:
         form = EnrollmentForm(user=request.user)
@@ -417,6 +431,7 @@ Please confirm your attendance for '{enrollment.training.title}' by clicking the
         'form': form,
         'staff': staff
     })
+
 
 @login_required
 def confirm_enrollment(request, token):
@@ -716,16 +731,13 @@ def register(request):
         form = UserSignupForm(request.POST, request.FILES)
         if form.is_valid():
             try:
-                user = form.save(commit=False)
-                user.set_password(form.cleaned_data['password'])
-                user.is_active = False  # ✅ Prevent login until approved
-                user.save()
+                user = form.save()  # ✅ Let the form handle is_active and password
 
                 if not hasattr(user, 'staff'):
                     Staff.objects.create(
                         user=user,
                         department=form.cleaned_data['department'],
-                        role=None,  # ⛔ No role assigned until approval
+                        role=None,
                         profile_picture=form.cleaned_data.get('profile_picture'),
                         active=False
                     )
@@ -738,6 +750,7 @@ def register(request):
         form = UserSignupForm()
     return render(request, 'trainings/register.html', {'form': form})
 
+
 @login_required
 def custom_logout(request):
     logout(request)
@@ -746,3 +759,40 @@ def custom_logout(request):
 
 def pending_approval(request):
     return render(request, 'trainings/pending_approval.html')
+
+
+
+
+from django.contrib.auth import authenticate, login
+from django.shortcuts import render, redirect
+from django.contrib import messages
+from django.contrib.auth.forms import AuthenticationForm
+from django.contrib.auth import get_user_model
+
+def custom_login(request):
+    if request.method == 'POST':
+        form = AuthenticationForm(request, data=request.POST)
+        username = request.POST.get('username')
+        password = request.POST.get('password')
+        user = authenticate(request, username=username, password=password)
+
+        if user is not None:
+            login(request, user)
+            return redirect('dashboard')
+        else:
+            # Check if user exists but is inactive
+            User = get_user_model()
+            try:
+                existing_user = User.objects.get(username=username)
+                if not existing_user.is_active:
+                    messages.warning(request, "Your account is pending approval. Please wait for admin activation.")
+                else:
+                    messages.error(request, "Invalid username or password. Please try again.")
+            except User.DoesNotExist:
+                messages.error(request, "Invalid username or password. Please try again.")
+
+    else:
+        form = AuthenticationForm()
+
+    return render(request, 'trainings/login.html', {'form': form})
+

@@ -95,3 +95,21 @@ def get_staff_for_user(user):
         return user.staff
     except Staff.DoesNotExist:
         return None
+
+
+from django.shortcuts import redirect
+from functools import wraps
+
+def approved_user_required(view_func):
+    @wraps(view_func)
+    def _wrapped_view(request, *args, **kwargs):
+        if not request.user.is_authenticated:
+            return redirect('login')
+        try:
+            staff = request.user.staff
+            if not staff.active or not staff.role:
+                return redirect('pending_approval')
+        except:
+            return redirect('pending_approval')
+        return view_func(request, *args, **kwargs)
+    return _wrapped_view

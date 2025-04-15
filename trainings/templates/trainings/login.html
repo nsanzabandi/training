@@ -27,13 +27,6 @@
     
         <h2>Login</h2>
 
-    <!-- ✅ Display form errors -->
-    {% if form.errors %}
-    <div class="alert alert-danger" role="alert">
-        Invalid username or password. Please try again.
-    </div>
-    {% endif %}
-
     <form method="post">
         {% csrf_token %}
         <div class="mb-3">
