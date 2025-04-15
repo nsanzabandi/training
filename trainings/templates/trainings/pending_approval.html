@@ -1,0 +1,9 @@
+{% extends 'base.html' %}
+{% block title %}Pending Approval{% endblock %}
+{% block content %}
+<div class="container py-5 text-center">
+  <h2>Your account is pending approval</h2>
+  <p>Please wait for the administrator to activate your access.</p>
+  <a href="{% url 'logout' %}" class="btn btn-secondary">Logout</a>
+</div>
+{% endblock %}

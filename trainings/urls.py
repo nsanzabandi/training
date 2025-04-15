@@ -2,6 +2,8 @@ from django.urls import path
 from . import views
 from django.conf import settings
 from django.conf.urls.static import static
+from django.contrib.auth import views as auth_views
+
 
 urlpatterns = [
     path('', views.dashboard, name='dashboard'),
@@ -25,6 +27,10 @@ urlpatterns = [
     path('staff/', views.staff_list, name='staff_list'),
     path('staff/new/', views.staff_create, name='staff_create'),
     path('staff/edit/<int:pk>/', views.staff_edit, name='staff_edit'),
+    path('staff/<int:staff_id>/approve/', views.approve_staff, name='approve_staff'),
+    path('staff/<int:pk>/delete/', views.staff_delete, name='staff_delete'),
+
+
 
     path('enrollments/', views.enrollment_list, name='enrollment_list'),
     path('enrollments/new/', views.enrollment_create, name='enrollment_create'),
@@ -44,5 +50,22 @@ urlpatterns = [
     path('reports/attendees/', views.attendee_report, name='attendee_report'),
     path('my-training-report/', views.my_training_report, name='my_training_report'),
 
+    path('preview-concept-note/<int:training_id>/', views.preview_concept_note, name='preview_concept_note'),
+    path('register/', views.register, name='register'),
+    path('staff/<int:pk>/delete/', views.staff_delete, name='staff_delete'),
+    path('pending-approval/', views.pending_approval, name='pending_approval'),
 
-] + static(settings.MEDIA_URL, document_root=settings.MEDIA_ROOT)
+    path('password_reset/', auth_views.PasswordResetView.as_view(template_name='auth/password_reset_form.html'), name='password_reset'),
+    path('password_reset/done/', auth_views.PasswordResetDoneView.as_view(template_name='auth/password_reset_done.html'), name='password_reset_done'),
+    path('reset/<uidb64>/<token>/', auth_views.PasswordResetConfirmView.as_view(template_name='auth/password_reset_confirm.html'), name='password_reset_confirm'),
+    path('reset/done/', auth_views.PasswordResetCompleteView.as_view(template_name='auth/password_reset_complete.html'), name='password_reset_complete'),
+
+
+
+
+
+
+
+]
+
+urlpatterns += static(settings.MEDIA_URL, document_root=settings.MEDIA_ROOT)

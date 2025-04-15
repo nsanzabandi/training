@@ -4,6 +4,26 @@ from django.contrib.auth.forms import UserCreationForm
 from django.contrib.auth.models import User
 
 
+class UserUpdateForm(forms.ModelForm):
+    class Meta:
+        model = User
+        fields = ['username']
+        widgets = {
+            'username': forms.TextInput(attrs={'class': 'form-control'})
+        }
+class UserUpdateForm(forms.ModelForm):
+    class Meta:
+        model = User
+        fields = ['username', 'first_name', 'last_name', 'email']
+        widgets = {
+            'username': forms.TextInput(attrs={'class': 'form-control'}),
+            'first_name': forms.TextInput(attrs={'class': 'form-control'}),
+            'last_name': forms.TextInput(attrs={'class': 'form-control'}),
+            'email': forms.EmailInput(attrs={'class': 'form-control'}),
+        }
+
+
+
 class DepartmentForm(forms.ModelForm):
     class Meta:
         model = Department
@@ -131,3 +151,21 @@ class EnrollmentForm(forms.ModelForm):
         return cleaned_data
 
 
+
+class UserSignupForm(forms.ModelForm):
+    password = forms.CharField(widget=forms.PasswordInput)
+    confirm_password = forms.CharField(widget=forms.PasswordInput)
+    department = forms.ModelChoiceField(queryset=Department.objects.all(), required=True)
+    profile_picture = forms.ImageField(required=False)
+
+    class Meta:
+        model = User
+        fields = ['first_name', 'last_name', 'username', 'email', 'password']
+
+    def clean(self):
+        cleaned_data = super().clean()
+        password = cleaned_data.get('password')
+        confirm = cleaned_data.get('confirm_password')
+        if password != confirm:
+            raise forms.ValidationError("Passwords do not match.")
+        return cleaned_data

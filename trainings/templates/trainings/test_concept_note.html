@@ -1,0 +1,33 @@
+{% extends 'base.html' %}
+{% block title %}Test Concept Note{% endblock %}
+
+{% block content %}
+<div class="container mt-5">
+  <h2>📄 Concept Note File Test</h2>
+  <p>This test will list all trainings with uploaded concept note documents.</p>
+  <table class="table table-bordered">
+    <thead>
+      <tr>
+        <th>Title</th>
+        <th>Concept Note</th>
+        <th>Direct URL</th>
+      </tr>
+    </thead>
+    <tbody>
+      {% for training in trainings %}
+      <tr>
+        <td>{{ training.title }}</td>
+        <td>
+          {% if training.concept_note %}
+          <a href="{{ training.concept_note.url }}" target="_blank">Open PDF</a>
+          {% else %}
+          No Document
+          {% endif %}
+        </td>
+        <td><code>{{ training.concept_note.url }}</code></td>
+      </tr>
+      {% endfor %}
+    </tbody>
+  </table>
+</div>
+{% endblock %}

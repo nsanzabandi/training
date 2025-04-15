@@ -1,20 +1,18 @@
 from pathlib import Path
 import os
-
 from dotenv import load_dotenv
+
 load_dotenv()
 
-
-# Base directory
+# === Base Directory ===
 BASE_DIR = Path(__file__).resolve().parent.parent
 
-# Security
-SECRET_KEY = 'django-insecure-your-secret-key-here'  # Replace with a secure key
-DEBUG = False
-ALLOWED_HOSTS = ['training-monitor.onrender.com']
-ALLOWED_HOSTS = ['*']
+# === Security ===
+SECRET_KEY = os.environ.get('SECRET_KEY', 'insecure-key-for-dev')
+DEBUG = os.environ.get('DEBUG', 'True') == 'True'  # Default to True for dev
+ALLOWED_HOSTS = ['training-monitor.onrender.com', 'localhost', '127.0.0.1']
 
-# Installed apps
+# === Installed Apps ===
 INSTALLED_APPS = [
     'dal',
     'dal_select2',
@@ -28,21 +26,23 @@ INSTALLED_APPS = [
     'widget_tweaks',
 ]
 
-# Middleware
+# === Middleware ===
 MIDDLEWARE = [
     'django.middleware.security.SecurityMiddleware',
+    'whitenoise.middleware.WhiteNoiseMiddleware',
     'django.contrib.sessions.middleware.SessionMiddleware',
     'django.middleware.common.CommonMiddleware',
     'django.middleware.csrf.CsrfViewMiddleware',
     'django.contrib.auth.middleware.AuthenticationMiddleware',
     'django.contrib.messages.middleware.MessageMiddleware',
     'django.middleware.clickjacking.XFrameOptionsMiddleware',
-    'whitenoise.middleware.WhiteNoiseMiddleware',
 ]
 
+# === URL and WSGI ===
 ROOT_URLCONF = 'training_monitor.urls'
+WSGI_APPLICATION = 'training_monitor.wsgi.application'
 
-# Templates
+# === Templates ===
 TEMPLATES = [
     {
         'BACKEND': 'django.template.backends.django.DjangoTemplates',
@@ -59,9 +59,7 @@ TEMPLATES = [
     },
 ]
 
-WSGI_APPLICATION = 'training_monitor.wsgi.application'
-
-# Database
+# === Database ===
 DATABASES = {
     'default': {
         'ENGINE': 'django.db.backends.sqlite3',
@@ -69,7 +67,7 @@ DATABASES = {
     }
 }
 
-# Password validation
+# === Password Validation ===
 AUTH_PASSWORD_VALIDATORS = [
     {'NAME': 'django.contrib.auth.password_validation.UserAttributeSimilarityValidator'},
     {'NAME': 'django.contrib.auth.password_validation.MinimumLengthValidator'},
@@ -77,48 +75,37 @@ AUTH_PASSWORD_VALIDATORS = [
     {'NAME': 'django.contrib.auth.password_validation.NumericPasswordValidator'},
 ]
 
-# Internationalization
+# === Localization ===
 LANGUAGE_CODE = 'en-us'
 TIME_ZONE = 'UTC'
 USE_I18N = True
 USE_TZ = True
 
-# Static files
+# === Static Files ===
 STATIC_URL = '/static/'
 STATICFILES_DIRS = [BASE_DIR / 'trainings/static']
-STATIC_ROOT = os.path.join(BASE_DIR, 'staticfiles')  # ✅ Required for xhtml2pdf
+STATIC_ROOT = os.path.join(BASE_DIR, 'staticfiles')
+STATICFILES_STORAGE = 'whitenoise.storage.CompressedManifestStaticFilesStorage'
 
-# Default primary key field type
-DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'
+# === Media Files === ✅
+MEDIA_URL = '/media/'
+MEDIA_ROOT = os.path.join(BASE_DIR, 'media')
 
-# Authentication
+# === Authentication ===
 LOGIN_URL = '/login/'
 LOGIN_REDIRECT_URL = '/'
 LOGOUT_REDIRECT_URL = '/login/'
 
-# for Media
-MEDIA_URL = '/media/'
-MEDIA_ROOT = os.path.join(BASE_DIR, 'media')
-
+# === Email Settings ===
 EMAIL_BACKEND = 'django.core.mail.backends.smtp.EmailBackend'
-EMAIL_HOST = 'smtp.gmail.com'
-EMAIL_PORT = 587
-EMAIL_USE_TLS = True
-EMAIL_HOST_USER = 'danielnsanzabandi@gmail.com'
-EMAIL_HOST_PASSWORD = 'frfr pwkb atyg rkhe'  # ← the one you just copied
+EMAIL_HOST = os.getenv('EMAIL_HOST', 'smtp.gmail.com')
+EMAIL_PORT = int(os.getenv('EMAIL_PORT', 587))
+EMAIL_USE_TLS = os.getenv('EMAIL_USE_TLS', 'True') == 'True'
+EMAIL_HOST_USER = os.getenv('EMAIL_HOST_USER')
+EMAIL_HOST_PASSWORD = os.getenv('EMAIL_HOST_PASSWORD')
 DEFAULT_FROM_EMAIL = EMAIL_HOST_USER
 
-STATICFILES_STORAGE = 'whitenoise.storage.CompressedManifestStaticFilesStorage'
-
-
-SECRET_KEY = os.environ.get('SECRET_KEY', 'insecure-key-for-dev')
-DEBUG = os.environ.get('DEBUG', 'False') == 'True'
-
-
-# Whitenoise for serving static files
-STATICFILES_STORAGE = 'whitenoise.storage.CompressedManifestStaticFilesStorage'
-
-# Deployment safety
+# === Render Deployment ===
 SECURE_PROXY_SSL_HEADER = ('HTTP_X_FORWARDED_PROTO', 'https')
-SESSION_COOKIE_SECURE = True
-CSRF_COOKIE_SECURE = True
+SESSION_COOKIE_SECURE = not DEBUG
+CSRF_COOKIE_SECURE = not DEBUG
