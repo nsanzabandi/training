@@ -10,7 +10,7 @@ BASE_DIR = Path(__file__).resolve().parent.parent
 # === Security ===
 SECRET_KEY = os.environ.get('SECRET_KEY', 'insecure-key-for-dev')
 DEBUG = os.environ.get('DEBUG', 'True') == 'True'  # Default to True for dev
-ALLOWED_HOSTS = ['training-monitor.onrender.com', 'localhost', '127.0.0.1']
+ALLOWED_HOSTS = ['training-monitor.onrender.com', 'training-c1v8.onrender.com', 'localhost', '127.0.0.1']
 
 # === Installed Apps ===
 INSTALLED_APPS = [
