@@ -1,0 +1,18 @@
+{% extends 'base.html' %}
+{% block title %}Thank You{% endblock %}
+
+{% block content %}
+<div class="container py-5 text-center">
+  <div class="card shadow-sm mx-auto" style="max-width: 600px;">
+    <div class="card-body">
+      <h3 class="text-success">
+        <i class="fas fa-check-circle me-2"></i> Thank You!
+      </h3>
+      <p> This is to confirm that your profile to attend:</p>
+     <p>{% if training_title %}<strong>{{ training_title }}</strong>{% else %}<strong>the selected training</strong>{% endif %}.</p>
+      <p>Has been successully keept, You will be contacted with further details or any changes. Otherwise, see you in the training</p>
+      <a href="{% url 'thank_you' %}"></a>
+    </div>
+  </div>
+</div>
+{% endblock %}

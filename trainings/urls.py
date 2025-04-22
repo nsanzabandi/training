@@ -56,6 +56,15 @@ urlpatterns = [
     path('staff/<int:pk>/delete/', views.staff_delete, name='staff_delete'),
     path('pending-approval/', views.pending_approval, name='pending_approval'),
 
+
+    path('invite/', views.quick_invite_create, name='quick_invite_create'),
+    path('enrollment/invite/<uuid:token>/', views.enrollment_invite_form, name='enrollment_invite_form'),
+    path('thank-you/', views.thank_you_page, name='thank_you'),
+
+
+
+
+
     path('password_reset/', auth_views.PasswordResetView.as_view(template_name='auth/password_reset_form.html'), name='password_reset'),
     path('password_reset/done/', auth_views.PasswordResetDoneView.as_view(template_name='auth/password_reset_done.html'), name='password_reset_done'),
     path('reset/<uidb64>/<token>/', auth_views.PasswordResetConfirmView.as_view(template_name='auth/password_reset_confirm.html'), name='password_reset_confirm'),

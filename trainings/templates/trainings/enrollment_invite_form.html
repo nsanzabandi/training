@@ -1,0 +1,74 @@
+{% extends 'base.html' %}
+{% load form_extras %}
+{% load static %}
+{% block title %}Complete Your Profile{% endblock %}
+
+{% block content %}
+<div class="container py-4 text-center">
+  <button class="btn btn-primary" data-bs-toggle="modal" data-bs-target="#completeProfileModal">
+    Complete Your Profile
+  </button>
+</div>
+
+<!-- ✅ Modal -->
+<div class="modal fade" id="completeProfileModal" tabindex="-1" aria-labelledby="completeProfileLabel" aria-hidden="true">
+  <div class="modal-dialog modal-lg modal-dialog-centered">
+    <div class="modal-content">
+      <form method="post" enctype="multipart/form-data">
+        {% csrf_token %}
+        <div class="modal-header">
+          <h5 class="modal-title" id="completeProfileLabel">
+            <i class="fas fa-user-edit text-primary me-2"></i>
+            Complete Your Profile for "{{ training.title }}"
+          </h5>
+          <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+        </div>
+
+        <div class="modal-body">
+          {{ form.non_field_errors }}
+
+          <div class="mb-3">
+            <label class="form-label">Email</label>
+            <input type="text" class="form-control" value="{{ participant.email }}" readonly>
+          </div>
+
+          <div class="mb-3">
+            {{ form.full_name.label_tag }}
+            {{ form.full_name|add_class:"form-control" }}
+          </div>
+
+          <div class="mb-3">
+            {{ form.phone.label_tag }}
+            {{ form.phone|add_class:"form-control" }}
+          </div>
+
+          <div class="mb-3">
+            {{ form.position.label_tag }}
+            {{ form.position|add_class:"form-control" }}
+          </div>
+
+          <div class="mb-3">
+            {{ form.department.label_tag }}
+            {{ form.department|add_class:"form-select" }}
+          </div>
+
+          <div class="mb-3">
+            {{ form.notes.label_tag }}
+            {{ form.notes|add_class:"form-control" }}
+          </div>
+
+          <div class="mb-3">
+            {{ form.profile_picture.label_tag }}
+            {{ form.profile_picture }}
+          </div>
+        </div>
+
+        <div class="modal-footer">
+          <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
+          <button type="submit" class="btn btn-success">Submit Profile</button>
+        </div>
+      </form>
+    </div>
+  </div>
+</div>
+{% endblock %}

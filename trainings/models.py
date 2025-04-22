@@ -75,6 +75,7 @@ class Participant(models.Model):
     department = models.ForeignKey(Department, on_delete=models.SET_NULL, null=True, blank=True)
     position = models.CharField(max_length=100, blank=True)
     notes = models.TextField(blank=True)
+    profile_picture = models.ImageField(upload_to='participant_photos/', null=True, blank=True)
 
     def __str__(self):
         return self.full_name

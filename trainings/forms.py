@@ -80,7 +80,7 @@ class TrainingForm(forms.ModelForm):
 class ParticipantForm(forms.ModelForm):
     class Meta:
         model = Participant
-        fields = ['full_name', 'email', 'department', 'phone', 'position']
+        fields = ['full_name', 'department', 'phone', 'position', 'notes', 'profile_picture']
 
     def __init__(self, *args, **kwargs):
         user = kwargs.pop('user', None)  # Get the user from kwargs
@@ -178,3 +178,7 @@ class UserSignupForm(forms.ModelForm):
             user.save()
         return user
 
+
+class QuickInviteForm(forms.Form):
+    email = forms.EmailField(label="Participant Email")
+    training = forms.ModelChoiceField(queryset=Training.objects.filter(status='approved'))

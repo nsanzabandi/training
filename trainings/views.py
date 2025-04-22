@@ -16,6 +16,9 @@ from django.db import IntegrityError
 from django.contrib.auth.forms import AuthenticationForm
 from django.contrib.auth import authenticate, login
 from django.db.models import Q
+from .forms import QuickInviteForm
+import uuid
+from django.utils.timezone import now 
 
 import io, os, csv, qrcode
 from collections import defaultdict
@@ -385,6 +388,35 @@ def enrollment_list(request):
         'staff': staff
     })
 
+def enrollment_invite_form(request, token):
+    enrollment = get_object_or_404(Enrollment, invite_token=token)
+    participant = enrollment.participant
+
+    if request.method == 'POST':
+        form = ParticipantForm(request.POST, request.FILES, instance=participant)
+        if form.is_valid():
+            participant = form.save() 
+
+            if enrollment.confirmation_status != 'confirmed':
+                enrollment.confirmation_status = 'confirmed'
+                enrollment.confirmation_date = now()
+                enrollment.save()
+
+            messages.success(request, "Your information has been submitted successfully.")
+            request.session['submitted_training'] = enrollment.training.title
+            return redirect('thank_you')
+        else:
+            print("Form errors:", form.errors)
+    else:
+        form = ParticipantForm(instance=participant)
+
+    return render(request, 'trainings/enrollment_invite_form.html', {
+        'form': form,
+        'participant': participant,
+        'training': enrollment.training
+    })
+
+
 
 
 
@@ -517,7 +549,7 @@ def approve_staff(request, staff_id):
     staff = get_object_or_404(Staff, pk=staff_id)
     staff.active = True
     staff.save()
-    staff.user.is_active = True  # ✅ Allow login
+    staff.user.is_active = True 
     staff.user.save()
     messages.success(request, f"{staff.user.get_full_name()} has been approved and activated.")
     return redirect('staff_list')
@@ -796,3 +828,57 @@ def custom_login(request):
 
     return render(request, 'trainings/login.html', {'form': form})
 
+
+
+@login_required
+def quick_invite_create(request):
+    if request.method == 'POST':
+        form = QuickInviteForm(request.POST)
+        if form.is_valid():
+            email = form.cleaned_data['email']
+            training = form.cleaned_data['training']
+
+            # Create or get Participant with just email
+            participant, created = Participant.objects.get_or_create(email=email)
+
+            # Generate Enrollment
+            enrollment = Enrollment.objects.create(
+                training=training,
+                participant=participant,
+                enrolled_by=request.user,
+                invite_token=uuid.uuid4()
+            )
+
+            # Send email with token link
+            invite_link = request.build_absolute_uri(
+                reverse('enrollment_invite_form', args=[str(enrollment.invite_token)])
+            )
+
+            send_mail(
+                subject='You are invited to complete your training profile',
+                message=f"""Dear Participant,
+
+You have been invited to participate in the training "{training.title}".
+Please complete your profile using the following link:
+
+{invite_link}
+
+Thank you.""",
+                from_email=settings.DEFAULT_FROM_EMAIL,
+                recipient_list=[email],
+                fail_silently=False
+            )
+
+            messages.success(request, "Invitation email sent successfully.")
+            return redirect('dashboard')
+    else:
+        form = QuickInviteForm()
+
+    return render(request, 'trainings/quick_invite_form.html', {'form': form, 'staff': request.user.staff})
+
+
+def thank_you_page(request):
+    training_title = request.session.pop('submitted_training', None)
+    return render(request, 'trainings/thank_you.html', {
+        'training_title': training_title
+    })
