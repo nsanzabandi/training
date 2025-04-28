@@ -6,91 +6,124 @@
 {% block content %}
 {% include 'trainings/sidebar.html' %}
 
-<div class="main-content" style="margin-left: 250px; padding: 2rem; max-width: 1000px; margin-right: auto;">
-  
-    <!-- Header Row -->
-    <div class="row align-items-center mb-4">
-      <div class="col-md-4 text-start">
-        <a href="{% url 'dashboard' %}" class="btn btn-primary">
-          <i class="fas fa-arrow-left"></i> Back
-        </a>
-      </div>
-      <div class="col-md-4 text-center">
-        <h3 class="mb-0">Trainings List</h3>
-      </div>
-      <div class="col-md-4 text-end">
-        <a href="{% url 'training_create' %}" class="btn btn-primary">
-          <i class="fas fa-plus-circle"></i> New Training
-        </a>
-      </div>
+<!-- ✅ Full-width main content -->
+<div class="main-content container-fluid px-4 py-4">
+
+  <!-- Header Row -->
+  <div class="row align-items-center mb-4">
+    <div class="col-md-4 text-start">
+      <a href="{% url 'dashboard' %}" class="btn btn-primary">
+        <i class="fas fa-arrow-left"></i> Back
+      </a>
     </div>
-  
-    <!-- Search Bar -->
-    <form method="get" class="mb-3 d-flex justify-content-center">
-        <div class="input-group input-group-sm" style="max-width: 400px; width: 100%;">
-          <input type="text" name="q" class="form-control" placeholder="Search training by title..." value="{{ request.GET.q }}">
-          <button class="btn btn-outline-secondary" type="submit">Search</button>
-        </div>
-      </form>
-      
-  
-    <!-- Trainings Table -->
-    <div class="card">
-      <div class="card-body">
-        {% if trainings %}
-        <div class="table-responsive">
-          <table class="table table-bordered">
-            <thead class="table-light">
-              <tr>
-                <th>Title</th>
-                <th>Department</th>
-                <th>Start Date</th>
-                <th>End Date</th>
-                <th>Status</th>
-                <th>Actions</th>
-              </tr>
-            </thead>
-            <tbody>
-              {% for training in trainings %}
-              <tr>
-                <td>{{ training.title }}</td>
-                <td>{{ training.department }}</td>
-                <td>{{ training.start_date|date:"M d, Y" }}</td>
-                <td>{{ training.end_date|date:"M d, Y" }}</td>
-                <td>
-                  {% if training.status == 'approved' %}
-                    <span class="badge bg-success">{{ training.status|title }}</span>
-                  {% elif training.status == 'pending' %}
-                    <span class="badge bg-warning text-dark">{{ training.status|title }}</span>
-                  {% elif training.status == 'rejected' %}
-                    <span class="badge bg-danger">{{ training.status|title }}</span>
-                  {% else %}
-                    <span class="badge bg-secondary">{{ training.status|title }}</span>
-                  {% endif %}
-                </td>
-                <td>
-                  <a href="{% url 'training_edit' training.pk %}" class="btn btn-sm btn-info" title="Edit">
-                    <i class="fas fa-edit"></i>
-                  </a>
-                  <a href="{% url 'training_delete' training.pk %}" class="btn btn-sm btn-danger" title="Delete">
-                    <i class="fas fa-trash"></i>
-                  </a>
-                </td>
-              </tr>
-              {% endfor %}
-            </tbody>
-          </table>
-        </div>
-        {% else %}
-        <div class="text-center py-4">
-          <i class="fas fa-chalkboard-teacher fa-3x text-muted mb-3"></i>
-          <h4>No training sessions found</h4>
-          <p>Create your first training by clicking the "New Training" button above.</p>
-        </div>
-        {% endif %}
-      </div>
+    <div class="col-md-4 text-center">
+      <h3 class="mb-0">Trainings List</h3>
     </div>
-  
+    <div class="col-md-4 text-end">
+      <a href="{% url 'training_create' %}" class="btn btn-primary">
+        <i class="fas fa-plus-circle"></i> New Training
+      </a>
+    </div>
   </div>
-  
+
+  <!-- Search Bar -->
+  <form method="get" class="mb-3 d-flex justify-content-center">
+    <div class="input-group input-group-sm" style="max-width: 500px; width: 100%;">
+      <input type="text" name="q" class="form-control" placeholder="Search training by title..." value="{{ request.GET.q }}">
+      <button class="btn btn-outline-secondary" type="submit">Search</button>
+    </div>
+  </form>
+
+  <!-- Trainings Table -->
+  <div class="card">
+    <div class="card-body">
+      {% if trainings %}
+      <div class="table-responsive">
+        <table class="table table-bordered table-striped align-middle">
+          <thead class="table-light">
+            <tr>
+              <th>Title</th>
+              <th>Department</th>
+              <th>District/Province</th>
+              <th>Venue</th>
+              <th>Attendees</th>
+              <th>Coordinator</th>
+              <th>Start Date</th>
+              <th>End Date</th>
+              <th>Status</th>
+              <th>Actions</th>
+            </tr>
+          </thead>
+          <tbody>
+            {% for training in trainings %}
+            <tr>
+              <td>{{ training.title }}</td>
+              <td>{{ training.department }}</td>
+              <td>{{ training.district }}</td>
+              <td>{{ training.venue }}</td>
+              <td>{{ training.max_capacity }}</td>
+              <td>{{ training.coordinator }}</td>
+              <td>{{ training.start_date|date:"M d, Y" }}</td>
+              <td>{{ training.end_date|date:"M d, Y" }}</td>
+              <td>
+                {% if training.status == 'approved' %}
+                  <span class="badge bg-success">{{ training.status|title }}</span>
+                {% elif training.status == 'pending' %}
+                  <span class="badge bg-warning text-dark">{{ training.status|title }}</span>
+                {% elif training.status == 'rejected' %}
+                  <span class="badge bg-danger">{{ training.status|title }}</span>
+                  {% if training.rejection_reason %}
+                    <!-- View Reason Button -->
+                    <button class="btn btn-sm btn-outline-danger mt-1" data-bs-toggle="modal" data-bs-target="#reasonModal{{ training.id }}">
+                      View Reason
+                    </button>
+                  {% endif %}
+                {% else %}
+                  <span class="badge bg-secondary">{{ training.status|title }}</span>
+                {% endif %}
+              </td>
+              <td>
+                <a href="{% url 'training_edit' training.pk %}" class="btn btn-sm btn-info" title="Edit">
+                  <i class="fas fa-edit"></i>
+                </a>
+                <a href="{% url 'training_delete' training.pk %}" class="btn btn-sm btn-danger" title="Delete">
+                  <i class="fas fa-trash"></i>
+                </a>
+              </td>
+            </tr>
+
+            <!-- Modal for rejection reason -->
+            {% if training.rejection_reason %}
+            <div class="modal fade" id="reasonModal{{ training.id }}" tabindex="-1" aria-labelledby="reasonModalLabel{{ training.id }}" aria-hidden="true">
+              <div class="modal-dialog">
+                <div class="modal-content">
+                  <div class="modal-header bg-danger text-white">
+                    <h5 class="modal-title" id="reasonModalLabel{{ training.id }}">Rejection Reason</h5>
+                    <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal" aria-label="Close"></button>
+                  </div>
+                  <div class="modal-body">
+                    <p>{{ training.rejection_reason }}</p>
+                  </div>
+                  <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
+                  </div>
+                </div>
+              </div>
+            </div>
+            {% endif %}
+            {% endfor %}
+          </tbody>
+        </table>
+      </div>
+      {% else %}
+      <div class="text-center py-4">
+        <i class="fas fa-chalkboard-teacher fa-3x text-muted mb-3"></i>
+        <h4>No training sessions found</h4>
+        <p>Create your first training by clicking the "New Training" button above.</p>
+      </div>
+      {% endif %}
+    </div>
+  </div>
+</div>
+
 {% endblock %}

@@ -21,7 +21,7 @@ def create_staff_profile(sender, instance, created, **kwargs):
 
 @receiver(post_save, sender=Staff)
 def update_user_status(sender, instance, **kwargs):
-    user = instance.user
+    user = instance
     new_status = instance.active and instance.role is not None
     if user.is_active != new_status:
         user.is_active = new_status

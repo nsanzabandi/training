@@ -1,44 +1,58 @@
 {% extends "base.html" %}
 {% load static %}
+{% load form_extras %}
+
 
 {% block title %}Staff Registration{% endblock %}
 
 {% block content %}
-<div class="container mt-5">
-  <div class="row justify-content-center">
-    <div class="col-md-8">
-      <div class="card shadow">
-        <div class="card-header bg-primary text-white">
-          <h4 class="mb-0">Create Your Account</h4>
-        </div>
-        <div class="card-body">
-          <form method="POST" enctype="multipart/form-data" novalidate>
-            {% csrf_token %}
-            {% for field in form %}
-              <div class="mb-3">
-                <label for="{{ field.id_for_label }}" class="form-label">{{ field.label }}</label>
-                {{ field }}
-                {% if field.help_text %}
-                  <small class="form-text text-muted">{{ field.help_text }}</small>
-                {% endif %}
-                {% for error in field.errors %}
-                  <div class="text-danger small">{{ error }}</div>
-                {% endfor %}
-              </div>
-            {% endfor %}
+<!-- ✅ Modal Registration Form -->
+<div class="modal show d-block" tabindex="-1" style="background: rgba(0, 0, 0, 0.2);">
+  <div class="modal-dialog modal-lg modal-dialog-centered">
+    <div class="modal-content shadow">
+      <div class="modal-header bg-primary text-white">
+        <h5 class="modal-title">Create Your Staff Account</h5>
+        <a href="{% url 'login' %}" class="btn-close" aria-label="Close"></a>
+      </div>
+      <div class="modal-body">
+        <form method="POST" enctype="multipart/form-data" novalidate>
+          {% csrf_token %}
+          {% for field in form %}
+            <div class="mb-3">
+              <label for="{{ field.id_for_label }}" class="form-label">{{ field.label }}</label>
+              {{ field|add_class:"form-control" }}
+              {% if field.help_text %}
+                <small class="form-text text-muted">{{ field.help_text }}</small>
+              {% endif %}
+              {% for error in field.errors %}
+                <div class="text-danger small">{{ error }}</div>
+              {% endfor %}
+            </div>
+          {% endfor %}
 
-            {% if form.non_field_errors %}
-              <div class="alert alert-danger">
-                {{ form.non_field_errors }}
-              </div>
-            {% endif %}
+          {% if form.non_field_errors %}
+            <div class="alert alert-danger">
+              {{ form.non_field_errors }}
+            </div>
+          {% endif %}
 
-            <button type="submit" class="btn btn-primary">Register</button>
-            <a href="{% url 'login' %}" class="btn btn-link">Already have an account?</a>
-          </form>
-        </div>
+          <div class="d-grid gap-2">
+            <button type="submit" class="btn btn-success">Register</button>
+            <a href="{% url 'login' %}" class="btn btn-link">Already have an account? Login</a>
+          </div>
+        </form>
       </div>
     </div>
   </div>
 </div>
+
+<!-- ✅ Prevent scrolling issues with full-page modal -->
+<style>
+  body.modal-open {
+    overflow: auto !important;
+  }
+  .modal-backdrop {
+    display: none;
+  }
+</style>
 {% endblock %}

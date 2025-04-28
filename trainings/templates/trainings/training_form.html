@@ -5,105 +5,177 @@
 {% block content %}
 {% include 'trainings/sidebar.html' %}
 
-<div class="container py-4">
-  <div class="row justify-content-center">
-    <div class="col-md-10 col-lg-8">
-      <div class="card shadow-sm border-0">
-        <div class="card-header text-center bg-light">
-          <h5 class="text-muted mb-0">📝 Create New Training</h5>
-        </div>
-        <div class="card-body">
+<!-- ✅ Modal Structure -->
+<div class="modal fade" id="createTrainingModal" tabindex="-1" aria-labelledby="createTrainingModalLabel" aria-hidden="true">
+  <div class="modal-dialog modal-xl modal-dialog-scrollable">
+    <div class="modal-content">
+      <div class="modal-header bg-light">
+        <h5 class="modal-title" id="createTrainingModalLabel">📝 Create New Training</h5>
+        <a href="{% url 'dashboard' %}" class="btn-close" aria-label="Close"></a>
+      </div>
 
-          {% if form.non_field_errors %}
-            <div class="alert alert-danger">
-              {{ form.non_field_errors }}
-            </div>
-          {% endif %}
+      <div class="modal-body">
+        {% if form.non_field_errors %}
+          <div class="alert alert-danger">
+            {{ form.non_field_errors }}
+          </div>
+        {% endif %}
 
-          <!-- ✅ Add enctype for file upload -->
-          <form method="post" enctype="multipart/form-data">
-            {% csrf_token %}
-            <div class="row g-3">
+        <form method="post" enctype="multipart/form-data" action="{% url 'training_create' %}" id="trainingForm">
+          {% csrf_token %}
+          <div class="row g-3">
 
-              <div class="col-md-6">
-                {{ form.title.label_tag }} 
-                {{ form.title|add_class:"form-control" }}
-              </div>
-
-              <div class="col-md-6">
-                {{ form.department.label_tag }}
-                {{ form.department|add_class:"form-select" }}
-              </div>
-
-              <div class="col-md-6">
-                {{ form.coordinator.label_tag }}
-                {{ form.coordinator|add_class:"form-select" }}
-              </div>
-
-              <div class="col-md-6">
-                {{ form.start_date.label_tag }}
-                <div class="input-group">
-                  {{ form.start_date|add_class:"form-control" }}
-                  <span class="input-group-text"><i class="fas fa-calendar-alt"></i></span>
-                </div>
-              </div>
-
-              <div class="col-md-6">
-                {{ form.end_date.label_tag }}
-                <div class="input-group">
-                  {{ form.end_date|add_class:"form-control" }}
-                  <span class="input-group-text"><i class="fas fa-calendar-alt"></i></span>
-                </div>
-              </div>
-
-              <div class="col-md-6">
-                {{ form.start_time.label_tag }}
-                <div class="input-group">
-                  {{ form.start_time|add_class:"form-control" }}
-                  <span class="input-group-text"><i class="fas fa-clock"></i></span>
-                </div>
-              </div>
-
-              <div class="col-md-6">
-                {{ form.end_time.label_tag }}
-                <div class="input-group">
-                  {{ form.end_time|add_class:"form-control" }}
-                  <span class="input-group-text"><i class="fas fa-clock"></i></span>
-                </div>
-              </div>
-
-              <div class="col-12">
-                {{ form.description.label_tag }}
-                {{ form.description|add_class:"form-control" }}
-              </div>
-
-              <div class="col-md-6">
-                {{ form.location.label_tag }}
-                {{ form.location|add_class:"form-control" }}
-              </div>
-
-              <div class="col-md-6">
-                {{ form.max_capacity.label_tag }}
-                {{ form.max_capacity|add_class:"form-control" }}
-              </div>
-
-              <!-- ✅ New Concept Note Upload Field -->
-              <div class="col-md-12">
-                {{ form.concept_note.label_tag }}
-                {{ form.concept_note|add_class:"form-control" }}
-              </div>
-
+            <div class="col-md-6">
+              {{ form.title.label_tag }}
+              {{ form.title|add_class:"form-control" }}
+              {% if form.title.errors %}
+                <div class="text-danger small">{{ form.title.errors.0 }}</div>
+              {% endif %}
             </div>
 
-            <div class="d-flex justify-content-between mt-4">
-              <button type="submit" class="btn btn-success">Save Training</button>
-              <a href="{% url 'training_list' %}" class="btn btn-outline-secondary">Cancel</a>
+            <div class="col-md-6">
+              {{ form.department.label_tag }}
+              {{ form.department|add_class:"form-select" }}
+              {% if form.department.errors %}
+                <div class="text-danger small">{{ form.department.errors.0 }}</div>
+              {% endif %}
             </div>
-          </form>
 
-        </div>
+            <div class="col-md-6">
+              {{ form.coordinator.label_tag }}
+              {{ form.coordinator|add_class:"form-select" }}
+              {% if form.coordinator.errors %}
+                <div class="text-danger small">{{ form.coordinator.errors.0 }}</div>
+              {% endif %}
+            </div>
+
+            <div class="col-md-6">
+              {{ form.max_capacity.label_tag }}
+              {{ form.max_capacity|add_class:"form-control" }}
+              {% if form.max_capacity.errors %}
+                <div class="text-danger small">{{ form.max_capacity.errors.0 }}</div>
+              {% endif %}
+            </div>
+
+            <div class="col-md-6">
+              {{ form.start_date.label_tag }}
+              <div class="input-group">
+                {{ form.start_date|add_class:"form-control" }}
+                <span class="input-group-text"><i class="fas fa-calendar-alt"></i></span>
+              </div>
+              {% if form.start_date.errors %}
+                <div class="text-danger small">{{ form.start_date.errors.0 }}</div>
+              {% endif %}
+            </div>
+
+            <div class="col-md-6">
+              {{ form.end_date.label_tag }}
+              <div class="input-group">
+                {{ form.end_date|add_class:"form-control" }}
+                <span class="input-group-text"><i class="fas fa-calendar-alt"></i></span>
+              </div>
+              {% if form.end_date.errors %}
+                <div class="text-danger small">{{ form.end_date.errors.0 }}</div>
+              {% endif %}
+            </div>
+
+            <div class="col-md-6">
+              {{ form.province.label_tag }}
+              {{ form.province|add_class:"form-select" }}
+              {% if form.province.errors %}
+                <div class="text-danger small">{{ form.province.errors.0 }}</div>
+              {% endif %}
+            </div>
+
+            <div class="col-md-6">
+              {{ form.district.label_tag }}
+              <select id="id_district" name="district" class="form-select">
+                <option value="">Select district</option>
+              </select>
+              {% if form.district.errors %}
+                <div class="text-danger small">{{ form.district.errors.0 }}</div>
+              {% endif %}
+            </div>
+
+            <div class="col-md-12">
+              {{ form.venue.label_tag }}
+              {{ form.venue|add_class:"form-control" }}
+              {% if form.venue.errors %}
+                <div class="text-danger small">{{ form.venue.errors.0 }}</div>
+              {% endif %}
+            </div>
+
+            <!-- ✅ Dynamic Document Upload Section -->
+            <div class="col-md-12">
+              <label class="form-label">Attach Supporting Documents</label>
+              <div id="file-upload-area">
+                <input type="file" name="documents" class="form-control mb-2" accept=".pdf,.doc,.docx">
+              </div>
+              <button type="button" class="btn btn-sm btn-outline-primary mt-2" onclick="addMoreFiles()">+ Add More</button>
+              <div class="form-text">Only PDF or Word files allowed. Max size: 10MB each.</div>
+            </div>
+
+          </div>
+        </form>
+      </div>
+
+      <div class="modal-footer">
+        <button type="submit" class="btn btn-success" form="trainingForm">Save Training</button>
+        <a href="{% url 'training_list' %}" class="btn btn-secondary">Cancel</a>
       </div>
     </div>
   </div>
 </div>
+
+<!-- ✅ JS for dynamic file upload and district loading -->
+<script>
+function addMoreFiles() {
+  const container = document.getElementById('file-upload-area');
+  const input = document.createElement('input');
+  input.type = 'file';
+  input.name = 'documents';
+  input.classList.add('form-control', 'mb-2');
+  input.accept = '.pdf,.doc,.docx';
+  container.appendChild(input);
+}
+
+document.addEventListener('DOMContentLoaded', function () {
+  const provinceSelect = document.getElementById('id_province');
+  const districtSelect = document.getElementById('id_district');
+
+  provinceSelect.addEventListener('change', function () {
+    const provinceId = this.value;
+    fetch(`/ajax/load-districts/?province_id=${provinceId}`)
+      .then(response => response.json())
+      .then(data => {
+        districtSelect.innerHTML = '<option value="">Select district</option>';
+        data.forEach(d => {
+          districtSelect.innerHTML += `<option value="${d.id}">${d.name}</option>`;
+        });
+      });
+  });
+
+  // Auto-open the modal on page load
+  const modal = new bootstrap.Modal(document.getElementById('createTrainingModal'));
+  modal.show();
+});
+</script>
+
+<!-- ✅ Optional: Remove backdrop and scroll fix -->
+<style>
+.modal-backdrop {
+  display: none !important;
+}
+body.modal-open {
+  overflow: auto;
+}
+</style>
+<script>
+  document.addEventListener('DOMContentLoaded', function () {
+    const modal = new bootstrap.Modal(document.getElementById('createTrainingModal'));
+    modal.show();
+  });
+</script>
+
+
 {% endblock %}

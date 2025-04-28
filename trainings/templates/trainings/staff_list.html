@@ -28,7 +28,7 @@
     <!-- Search -->
     <form method="get" class="mb-3 d-flex justify-content-center">
       <div class="input-group input-group-sm" style="max-width: 400px; width: 100%;">
-        <input type="text" name="q" class="form-control" placeholder="Search staff by name, department or role..." value="{{ request.GET.q }}">
+        <input type="text" name="q" class="form-control" placeholder="Search staff by username, email, department or role..." value="{{ request.GET.q }}">
         <button class="btn btn-outline-secondary" type="submit">Search</button>
       </div>
     </form>
@@ -53,13 +53,37 @@
         <tbody>
           {% for s in staff_members %}
           <tr>
-            <td>{{ s.user.profile }}</td>
-            <td>{{ s.user.username }}</td>
-            <td>{{ s.user.email }}</td>
-            <td>{{ s.role|default:"-"|title }}</td>
-            <td>{{ s.department }}</td>
-            <td>{{ s.position }}</td>
-            <td>{{ s.contact_number }}</td>
+            <td>
+              {% if s.profile_picture %}
+                <img src="{{ s.profile_picture.url }}" alt="Profile" class="rounded-circle" width="40" height="40">
+              {% else %}
+                <img src="https://via.placeholder.com/40" alt="Profile" class="rounded-circle">
+              {% endif %}
+            </td>
+            <td>{{ s.username }}</td>
+            <td>{{ s.email }}</td>
+            <td>{{ s.get_role_display|default:"-" }}</td>
+            <td>
+              {% if s.department %}
+                {{ s.department.name }}
+              {% else %}
+                -
+              {% endif %}
+            </td>
+            <td>
+              {% if s.position %}
+                {{ s.position }}
+              {% else %}
+                -
+              {% endif %}
+            </td>
+            <td>
+              {% if s.contact_number %}
+                {{ s.contact_number }}
+              {% else %}
+                -
+              {% endif %}
+            </td>
             <td>
               {% if s.active %}
                 <span class="badge bg-success">Active</span>

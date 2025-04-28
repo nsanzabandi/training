@@ -67,6 +67,9 @@ DATABASES = {
     }
 }
 
+AUTH_USER_MODEL = 'trainings.Staff'
+
+
 # === Password Validation ===
 AUTH_PASSWORD_VALIDATORS = [
     {'NAME': 'django.contrib.auth.password_validation.UserAttributeSimilarityValidator'},
@@ -96,6 +99,8 @@ LOGIN_URL = '/login/'
 LOGIN_REDIRECT_URL = '/'
 LOGOUT_REDIRECT_URL = '/login/'
 
+DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'
+
 # === Email Settings ===
 EMAIL_BACKEND = 'django.core.mail.backends.smtp.EmailBackend'
 EMAIL_HOST = os.getenv('EMAIL_HOST', 'smtp.gmail.com')
@@ -109,3 +114,6 @@ DEFAULT_FROM_EMAIL = EMAIL_HOST_USER
 SECURE_PROXY_SSL_HEADER = ('HTTP_X_FORWARDED_PROTO', 'https')
 SESSION_COOKIE_SECURE = not DEBUG
 CSRF_COOKIE_SECURE = not DEBUG
+
+
+

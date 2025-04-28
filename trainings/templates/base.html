@@ -1,44 +1,52 @@
 {% load static %}
 <!DOCTYPE html>
-<html>
+<html lang="en">
 <head>
+  <meta charset="UTF-8">
   <title>{% block title %}Training Management System{% endblock %}</title>
-  <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
 
-  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css">
+  <!-- CSS & Fonts -->
+  <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
   <link href="{% static 'css/main_admin.css' %}" rel="stylesheet">
   <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
 
+  <!-- Chart.js -->
+  <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+  
+  <!-- ✅ SweetAlert2 -->
+  <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
 </head>
 <body class="bg-light">
 
-  <div class="d-flex">
-    
-    <!-- ✅ Sidebar -->
-    <!-- ✅ Main Content Area -->
-    <div class="container-fluid">
-      <div class="row">
-    
-        <div class="col-md-9 col-lg-10 main-content-wrapper">
-          <!-- Flash Messages -->
-          {% if messages %}
-            <div class="mb-3 mt-2">
-              {% for message in messages %}
-                <div class="alert alert-{{ message.tags }} alert-dismissible fade show" role="alert">
-                  {{ message }}
-                  <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
-                </div>
-              {% endfor %}
-            </div>
-          {% endif %}
-    
-          {% block content %}{% endblock %}
-        </div>
+<div class="d-flex">
+  <div class="container-fluid">
+    <div class="row">
+      <div class="col-md-9 col-lg-10 main-content-wrapper">
+        {% block content %}{% endblock %}
       </div>
     </div>
   </div>
-<!-- Bootstrap JS -->
+</div>
+
+<!-- JS Scripts -->
 <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
 
+<!-- ✅ SweetAlert2 for Django Messages -->
+{% if messages %}
+<script>
+document.addEventListener('DOMContentLoaded', function () {
+    {% for message in messages %}
+    Swal.fire({
+        icon: "{% if message.tags == 'error' %}error{% elif message.tags == 'success' %}success{% else %}info{% endif %}",
+        title: "{{ message|escapejs }}",
+        showConfirmButton: true,
+        confirmButtonColor: "#3085d6",
+        timer: 4000
+    });
+    {% endfor %}
+});
+</script>
+{% endif %}
+
 </body>
-    
+</html>

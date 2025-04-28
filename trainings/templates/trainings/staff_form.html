@@ -1,85 +1,56 @@
 {% extends 'base.html' %}
-{% load static %}
 {% load form_extras %}
-
-{% block title %}{{ editing|default:False|yesno:"Edit,Create" }} Staff{% endblock %}
+{% block title %}Create Staff{% endblock %}
 
 {% block content %}
-<div class="container py-4">
-  <div class="row justify-content-center">
-    <div class="col-lg-10">
-      <div class="card shadow-sm">
-        <div class="card-header bg-white border-bottom">
-          <h4 class="mb-0">{{ editing|default:False|yesno:"Edit,Create" }} Staff Account</h4>
-        </div>
+{% include 'trainings/sidebar.html' %}
 
-        <div class="card-body">
-          <form method="post" novalidate>
-            {% csrf_token %}
+<div class="modal fade show" id="createStaffModal" tabindex="-1" aria-labelledby="createStaffModalLabel" style="display:block;">
+  <div class="modal-dialog modal-lg modal-dialog-scrollable">
+    <div class="modal-content">
+      <div class="modal-header bg-light">
+        <h5 class="modal-title" id="createStaffModalLabel">📝 Create New Staff Member</h5>
+        <a href="{% url 'staff_list' %}" class="btn-close"></a>
+      </div>
 
-            <!-- 👤 User Credentials -->
-            <fieldset class="mb-4">
-              <legend class="fw-bold text-primary">👤 User Credentials</legend>
-              <div class="row g-3">
-                <div class="col-md-4">
-                  {{ user_form.username.label_tag }}
-                  {{ user_form.username|add_class:"form-control" }}
-                </div>
-
-                {% if not editing %}
-                <div class="col-md-4">
-                  {{ user_form.password1.label_tag }}
-                  {{ user_form.password1|add_class:"form-control" }}
-                </div>
-                <div class="col-md-4">
-                  {{ user_form.password2.label_tag }}
-                  {{ user_form.password2|add_class:"form-control" }}
-                </div>
+      <div class="modal-body">
+        <form method="post" enctype="multipart/form-data" action="{% url 'staff_create' %}" id="staffForm">
+          {% csrf_token %}
+          <div class="row g-3">
+            {% for field in form %}
+              <div class="col-md-6">
+                {{ field.label_tag }}
+                {{ field|add_class:"form-control" }}
+                {% if field.errors %}
+                  <div class="text-danger small">{{ field.errors.0 }}</div>
                 {% endif %}
               </div>
-            </fieldset>
+            {% endfor %}
+          </div>
+        </form>
+      </div>
 
-            <!-- 📋 Staff Profile Info -->
-            <fieldset class="mb-4">
-              <legend class="fw-bold text-primary">📋 Staff Profile</legend>
-              <div class="row g-3">
-                <div class="col-md-6">
-                  {{ staff_form.department.label_tag }}
-                  {{ staff_form.department|add_class:"form-control" }}
-                </div>
-                <div class="col-md-6">
-                  {{ staff_form.role.label_tag }}
-                  {{ staff_form.role|add_class:"form-control" }}
-                </div>
-                <div class="col-md-6">
-                  {{ staff_form.contact_number.label_tag }}
-                  {{ staff_form.contact_number|add_class:"form-control" }}
-                </div>
-                <div class="col-md-6">
-                  {{ staff_form.position.label_tag }}
-                  {{ staff_form.position|add_class:"form-control" }}
-                </div>
-                <div class="col-md-6 mt-2">
-                  <div class="form-check">
-                    {{ staff_form.active|add_class:"form-check-input" }}
-                    {{ staff_form.active.label_tag }}
-                  </div>
-                </div>
-              </div>
-            </fieldset>
-
-            <!-- ✅ Buttons -->
-            <div class="d-flex justify-content-between mt-4">
-              <a href="{% url 'staff_list' %}" class="btn btn-secondary">Cancel</a>
-              <button type="submit" class="btn btn-primary">
-                {{ editing|default:False|yesno:"Update,Save" }}
-              </button>
-            </div>
-
-          </form>
-        </div>
+      <div class="modal-footer">
+        <button type="submit" class="btn btn-success" form="staffForm">Save Staff</button>
+        <a href="{% url 'staff_list' %}" class="btn btn-secondary">Cancel</a>
       </div>
     </div>
   </div>
 </div>
+
+<style>
+.modal-backdrop {
+  display: none !important;
+}
+body.modal-open {
+  overflow: auto;
+}
+</style>
+
+<script>
+document.addEventListener('DOMContentLoaded', function () {
+  const modal = new bootstrap.Modal(document.getElementById('createStaffModal'));
+  modal.show();
+});
+</script>
 {% endblock %}

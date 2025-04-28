@@ -1,0 +1,139 @@
+{% extends 'base.html' %}
+{% load form_extras %}
+{% block title %}Edit Training{% endblock %}
+
+{% block content %}
+{% include 'trainings/sidebar.html' %}
+
+<!-- ✅ Edit Modal -->
+<div class="modal fade" id="editTrainingModal" tabindex="-1" aria-labelledby="editTrainingModalLabel" aria-hidden="true">
+  <div class="modal-dialog modal-xl modal-dialog-scrollable">
+    <div class="modal-content">
+      <div class="modal-header bg-light">
+        <h5 class="modal-title" id="editTrainingModalLabel">✏️ Edit Training</h5>
+        <a href="{% url 'training_list' %}" class="btn-close" aria-label="Close"></a>
+      </div>
+
+      <div class="modal-body">
+        {% if form.non_field_errors %}
+          <div class="alert alert-danger">
+            {{ form.non_field_errors }}
+          </div>
+        {% endif %}
+
+        <form method="post" enctype="multipart/form-data" action="{% url 'training_edit' training.id %}" id="editTrainingForm">
+          {% csrf_token %}
+          <div class="row g-3">
+
+            <div class="col-md-6">{{ form.title.label_tag }} {{ form.title|add_class:"form-control" }}</div>
+            <div class="col-md-6">{{ form.department.label_tag }} {{ form.department|add_class:"form-select" }}</div>
+            <div class="col-md-6">{{ form.coordinator.label_tag }} {{ form.coordinator|add_class:"form-select" }}</div>
+            <div class="col-md-6">{{ form.max_capacity.label_tag }} {{ form.max_capacity|add_class:"form-control" }}</div>
+
+            <div class="col-md-6">
+              {{ form.start_date.label_tag }}
+              <div class="input-group">{{ form.start_date|add_class:"form-control" }}
+                <span class="input-group-text"><i class="fas fa-calendar-alt"></i></span>
+              </div>
+            </div>
+
+            <div class="col-md-6">
+              {{ form.end_date.label_tag }}
+              <div class="input-group">{{ form.end_date|add_class:"form-control" }}
+                <span class="input-group-text"><i class="fas fa-calendar-alt"></i></span>
+              </div>
+            </div>
+
+            <div class="col-md-6">{{ form.province.label_tag }} {{ form.province|add_class:"form-select" }}</div>
+
+            <div class="col-md-6">
+              {{ form.district.label_tag }}
+              <select id="id_district" name="district" class="form-select">
+                <option value="{{ form.district.value }}">{{ form.district.value }}</option>
+              </select>
+            </div>
+
+            <div class="col-md-12">{{ form.venue.label_tag }} {{ form.venue|add_class:"form-control" }}</div>
+
+            <!-- 📁 Existing Documents -->
+            {% if training.documents.exists %}
+            <div class="col-md-12">
+              <label class="form-label">Uploaded Documents</label>
+              <ul class="list-group mb-2">
+                {% for doc in training.documents.all %}
+                <li class="list-group-item d-flex justify-content-between align-items-center">
+                  <a href="{{ doc.file.url }}" target="_blank"><i class="fas fa-file"></i> {{ doc.file.name|slice:"30" }}</a>
+                  <a href="{% url 'delete_training_document' doc.id %}" class="btn btn-sm btn-danger"><i class="fas fa-trash-alt"></i></a>
+                </li>
+                {% endfor %}
+              </ul>
+            </div>
+            {% endif %}
+
+            <!-- 📎 Upload More Files -->
+            <div class="col-md-12">
+              <label class="form-label">Upload More Documents</label>
+              <div id="edit-file-upload-area">
+                <input type="file" name="documents" class="form-control mb-2" accept=".pdf,.doc,.docx">
+              </div>
+              <button type="button" class="btn btn-sm btn-outline-primary mt-2" onclick="addMoreEditFiles()">+ Add More</button>
+              <div class="form-text">Only PDF or Word files allowed. Max size: 10MB each.</div>
+            </div>
+
+          </div>
+        </form>
+      </div>
+
+      <div class="modal-footer">
+        <button type="submit" class="btn btn-success" form="editTrainingForm">Update Training</button>
+        <a href="{% url 'training_list' %}" class="btn btn-secondary">Cancel</a>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- ✅ JS for file upload & district logic -->
+<script>
+function addMoreEditFiles() {
+  const container = document.getElementById('edit-file-upload-area');
+  const input = document.createElement('input');
+  input.type = 'file';
+  input.name = 'documents';
+  input.classList.add('form-control', 'mb-2');
+  input.accept = '.pdf,.doc,.docx';
+  container.appendChild(input);
+}
+
+document.addEventListener('DOMContentLoaded', function () {
+  const provinceSelect = document.getElementById('id_province');
+  const districtSelect = document.getElementById('id_district');
+
+  if (provinceSelect) {
+    provinceSelect.addEventListener('change', function () {
+      const provinceId = this.value;
+      fetch(`/ajax/load-districts/?province_id=${provinceId}`)
+        .then(response => response.json())
+        .then(data => {
+          districtSelect.innerHTML = '<option value="">Select district</option>';
+          data.forEach(d => {
+            districtSelect.innerHTML += `<option value="${d.id}">${d.name}</option>`;
+          });
+        });
+    });
+  }
+
+  const modal = new bootstrap.Modal(document.getElementById('editTrainingModal'));
+  modal.show();
+});
+</script>
+
+<!-- Prevent backdrop blocking -->
+<style>
+.modal-backdrop {
+  display: none !important;
+}
+body.modal-open {
+  overflow: auto;
+}
+</style>
+{% endblock %}

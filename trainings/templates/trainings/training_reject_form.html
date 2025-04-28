@@ -1,0 +1,23 @@
+<!-- Bootstrap Modal -->
+<div class="modal fade" id="rejectTrainingModal" tabindex="-1" aria-labelledby="rejectTrainingLabel" aria-hidden="true">
+    <div class="modal-dialog">
+      <form method="post" action="{% url 'reject_training' training.id %}">
+        {% csrf_token %}
+        <div class="modal-content">
+          <div class="modal-header">
+            <h5 class="modal-title">Reject Training</h5>
+            <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+          </div>
+          <div class="modal-body">
+            <label for="rejection_reason">Reason for rejection:</label>
+            <textarea name="rejection_reason" class="form-control" required></textarea>
+          </div>
+          <div class="modal-footer">
+            <button type="submit" class="btn btn-danger">Reject</button>
+            <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancel</button>
+          </div>
+        </div>
+      </form>
+    </div>
+  </div>
+  

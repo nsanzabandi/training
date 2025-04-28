@@ -1,16 +1,11 @@
+# trainings/forms.py
+
 from django import forms
-from .models import Training, Participant, Department,Staff, Enrollment
+from .models import Training, Participant, Department, Staff, Enrollment
 from django.contrib.auth.forms import UserCreationForm
 from django.contrib.auth.models import User
 
-
-class UserUpdateForm(forms.ModelForm):
-    class Meta:
-        model = User
-        fields = ['username']
-        widgets = {
-            'username': forms.TextInput(attrs={'class': 'form-control'})
-        }
+# ✅ Correct UserUpdateForm (only one definition now)
 class UserUpdateForm(forms.ModelForm):
     class Meta:
         model = User
@@ -22,8 +17,7 @@ class UserUpdateForm(forms.ModelForm):
             'email': forms.EmailInput(attrs={'class': 'form-control'}),
         }
 
-
-
+# ✅ Department Form
 class DepartmentForm(forms.ModelForm):
     class Meta:
         model = Department
@@ -32,37 +26,31 @@ class DepartmentForm(forms.ModelForm):
             'name': forms.TextInput(attrs={'class': 'form-control'})
         }
 
-
+# ✅ Training Form
 class TrainingForm(forms.ModelForm):
     class Meta:
         model = Training
-        fields = [
-            'title', 'description', 'department', 'start_date', 'end_date',
-            'start_time', 'end_time', 'location', 'max_capacity',
-            'coordinator', 'concept_note'
+        exclude = [
+            'created_by', 'status', 'created_at',
+            'concept_note', 'participant_list', 'agenda', 'rejection_reason',
         ]
         widgets = {
             'start_date': forms.DateInput(attrs={'type': 'date'}),
             'end_date': forms.DateInput(attrs={'type': 'date'}),
-            'start_time': forms.TimeInput(attrs={'type': 'time'}),
-            'end_time': forms.TimeInput(attrs={'type': 'time'}),
+            'venue': forms.TextInput(attrs={'class': 'form-control', 'placeholder': 'Enter venue name (e.g., Serena Hotel)'}),
         }
 
     def __init__(self, *args, **kwargs):
         user = kwargs.pop('user', None)
         super().__init__(*args, **kwargs)
-        
-        # Restrict coordinator to users whose Staff role is 'supervisor'
-        supervisor_ids = Staff.objects.filter(role='supervisor').values_list('user__id', flat=True)
-        self.fields['coordinator'].queryset = User.objects.filter(id__in=supervisor_ids)
-        self.fields['coordinator'].required = False  # Optional, to handle cases with no supervisors
-        
+
+        # ✅ Correct supervisor filtering
+        self.fields['coordinator'].queryset = Staff.objects.filter(role='supervisor')
+
         if user and hasattr(user, 'staff') and user.staff.role == 'regular':
-            # Restrict department to user's department
             self.fields['department'].queryset = Department.objects.filter(id=user.staff.department.id)
             self.fields['department'].initial = user.staff.department
             self.fields['department'].widget.attrs['readonly'] = True
-
 
     def clean(self):
         cleaned_data = super().clean()
@@ -75,36 +63,82 @@ class TrainingForm(forms.ModelForm):
         return cleaned_data
 
 
-
-    
+# ✅ Participant Form
 class ParticipantForm(forms.ModelForm):
     class Meta:
         model = Participant
-        fields = ['full_name', 'department', 'phone', 'position', 'notes', 'profile_picture']
+        fields = ['national_id', 'email', 'full_name', 'department', 'phone', 'position', 'notes', 'profile_picture']
 
     def __init__(self, *args, **kwargs):
-        user = kwargs.pop('user', None)  # Get the user from kwargs
+        user = kwargs.pop('user', None)
         super().__init__(*args, **kwargs)
-        
+
         if user and hasattr(user, 'staff') and user.staff.role == 'regular':
-            # Restrict department dropdown to user's department only
             self.fields['department'].queryset = Department.objects.filter(id=user.staff.department.id)
             self.fields['department'].initial = user.staff.department
             self.fields['department'].widget.attrs['readonly'] = True
 
+    def clean(self):
+        cleaned_data = super().clean()
+        national_id = cleaned_data.get('national_id')
+        email = cleaned_data.get('email')
 
-class StaffForm(forms.ModelForm):
+        if national_id:
+            qs = Participant.objects.filter(national_id=national_id)
+            if self.instance.pk:
+                qs = qs.exclude(pk=self.instance.pk)
+            if qs.exists():
+                raise forms.ValidationError("A participant with this National ID already exists.")
+
+        if email:
+            qs = Participant.objects.filter(email=email)
+            if self.instance.pk:
+                qs = qs.exclude(pk=self.instance.pk)
+            if qs.exists():
+                raise forms.ValidationError("A participant with this Email already exists.")
+
+        return cleaned_data
+
+# ✅ Staff Form
+class StaffSignupForm(forms.ModelForm):
+    password1 = forms.CharField(widget=forms.PasswordInput(attrs={'class': 'form-control'}), label="Password")
+    password2 = forms.CharField(widget=forms.PasswordInput(attrs={'class': 'form-control'}), label="Confirm Password")
+
     class Meta:
         model = Staff
-        fields = ['role', 'department', 'contact_number', 'position', 'active']
-        widgets = {
-            'role': forms.Select(attrs={'class': 'form-select'}),
-            'department': forms.Select(attrs={'class': 'form-select'}),
-            'contact_number': forms.TextInput(attrs={'class': 'form-control'}),
-            'position': forms.TextInput(attrs={'class': 'form-control'}),
-            'active': forms.CheckboxInput(attrs={'class': 'form-check-input'}),
-        }
+        fields = [
+            'username', 'email', 'first_name', 'last_name',
+            'role', 'department', 'position', 'contact_number', 'profile_picture'
+        ]
 
+    def clean(self):
+        cleaned_data = super().clean()
+        password1 = cleaned_data.get('password1')
+        password2 = cleaned_data.get('password2')
+        username = cleaned_data.get('username')
+        email = cleaned_data.get('email')
+
+        if password1 != password2:
+            raise forms.ValidationError("Passwords do not match.")
+
+        if username and get_user_model().objects.filter(username=username).exists():
+            raise forms.ValidationError("Username already exists.")
+
+        if email and get_user_model().objects.filter(email=email).exists():
+            raise forms.ValidationError("Email already exists.")
+
+        return cleaned_data
+
+    def save(self, commit=True):
+        staff = super().save(commit=False)
+        staff.set_password(self.cleaned_data['password1'])
+        staff.active = False  # Adjust based on your approval logic
+        if commit:
+            staff.save()
+        return staff
+        
+
+# ✅ Custom User Creation (for Django admin compatibility)
 class CustomUserCreationForm(UserCreationForm):
     def __init__(self, *args, **kwargs):
         super().__init__(*args, **kwargs)
@@ -114,20 +148,18 @@ class CustomUserCreationForm(UserCreationForm):
             else:
                 self.fields[field].widget.attrs.update({'class': 'form-control'})
 
-
+# ✅ Enrollment Form
 class EnrollmentForm(forms.ModelForm):
     class Meta:
         model = Enrollment
         fields = ['participant', 'training', 'confirmation_status', 'attendance_status', 'notes']
 
     def __init__(self, *args, **kwargs):
-        user = kwargs.pop('user', None)  # Get the user from kwargs
+        user = kwargs.pop('user', None)
         super().__init__(*args, **kwargs)
-        
+
         if user and hasattr(user, 'staff') and user.staff.role == 'regular':
-            # Restrict participant dropdown to those in the user's department
             self.fields['participant'].queryset = Participant.objects.filter(department=user.staff.department)
-            # Restrict training dropdown to those in the user's department
             self.fields['training'].queryset = Training.objects.filter(department=user.staff.department)
 
     def clean(self):
@@ -136,11 +168,9 @@ class EnrollmentForm(forms.ModelForm):
         training = cleaned_data.get('training')
 
         if participant and training:
-            # Prevent same participant in same training
             if Enrollment.objects.filter(participant=participant, training=training).exists():
                 raise forms.ValidationError("This participant is already enrolled in this training.")
 
-            # Prevent overlapping date with other trainings
             participant_enrollments = Enrollment.objects.filter(participant=participant)
             for e in participant_enrollments:
                 if e.training.start_date == training.start_date:
@@ -150,35 +180,42 @@ class EnrollmentForm(forms.ModelForm):
 
         return cleaned_data
 
+from django.contrib.auth import get_user_model
 
-
-class UserSignupForm(forms.ModelForm):
-    password = forms.CharField(widget=forms.PasswordInput)
-    confirm_password = forms.CharField(widget=forms.PasswordInput)
-    department = forms.ModelChoiceField(queryset=Department.objects.all(), required=True)
-    profile_picture = forms.ImageField(required=False)
+class StaffSignupForm(forms.ModelForm):
+    password1 = forms.CharField(widget=forms.PasswordInput(attrs={'class': 'form-control'}), label="Password")
+    password2 = forms.CharField(widget=forms.PasswordInput(attrs={'class': 'form-control'}), label="Confirm Password")
 
     class Meta:
-        model = User
-        fields = ['first_name', 'last_name', 'username', 'email', 'password']
+        model = Staff
+        fields = [
+            'username', 'email', 'first_name', 'last_name',
+            'role', 'department', 'position', 'contact_number', 'profile_picture'
+        ]
 
     def clean(self):
         cleaned_data = super().clean()
-        password = cleaned_data.get('password')
-        confirm = cleaned_data.get('confirm_password')
-        if password != confirm:
+        password1 = cleaned_data.get('password1')
+        password2 = cleaned_data.get('password2')
+
+        if password1 != password2:
             raise forms.ValidationError("Passwords do not match.")
+        
+        email = cleaned_data.get('email')
+        if get_user_model().objects.filter(email=email).exists():
+            raise forms.ValidationError("Email already exists.")
+
         return cleaned_data
 
     def save(self, commit=True):
-        user = super().save(commit=False)
-        user.is_active = False 
-        user.set_password(self.cleaned_data["password"])
+        staff = super().save(commit=False)
+        staff.set_password(self.cleaned_data['password1'])
+        staff.active = False  # Adjust based on your approval logic
         if commit:
-            user.save()
-        return user
+            staff.save()
+        return staff
 
-
+# ✅ Quick Invite Form
 class QuickInviteForm(forms.Form):
     email = forms.EmailField(label="Participant Email")
     training = forms.ModelChoiceField(queryset=Training.objects.filter(status='approved'))

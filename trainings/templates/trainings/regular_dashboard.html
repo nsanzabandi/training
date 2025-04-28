@@ -23,42 +23,10 @@
 
     <!-- ✅ Statistic Cards -->
     <div class="stats-cards mb-4">
-      <div class="stat-card">
-        <div class="stat-info">
-          <h6>Total Trainings</h6>
-          <h3>{{ total_trainings }}</h3>
-        </div>
-        <div class="stat-icon">
-          <i class="fas fa-calendar-alt"></i>
-        </div>
-      </div>
-      <div class="stat-card">
-        <div class="stat-info">
-          <h6>Pending Trainings</h6>
-          <h3>{{ pending_trainings }}</h3>
-        </div>
-        <div class="stat-icon">
-          <i class="fas fa-clock"></i>
-        </div>
-      </div>
-      <div class="stat-card">
-        <div class="stat-info">
-          <h6>Total Participants</h6>
-          <h3>{{ total_participants }}</h3>
-        </div>
-        <div class="stat-icon">
-          <i class="fas fa-users"></i>
-        </div>
-      </div>
-      <div class="stat-card">
-        <div class="stat-info">
-          <h6>Confirmed Enrollments</h6>
-          <h3>{{ total_confirmed }}</h3>
-        </div>
-        <div class="stat-icon">
-          <i class="fas fa-check-circle"></i>
-        </div>
-      </div>
+      <div class="stat-card"><div class="stat-info"><h6>Total Trainings</h6><h3>{{ total_trainings }}</h3></div><div class="stat-icon"><i class="fas fa-calendar-alt"></i></div></div>
+      <div class="stat-card"><div class="stat-info"><h6>Pending Trainings</h6><h3>{{ pending_trainings }}</h3></div><div class="stat-icon"><i class="fas fa-clock"></i></div></div>
+      <div class="stat-card"><div class="stat-info"><h6>Total Participants</h6><h3>{{ total_participants }}</h3></div><div class="stat-icon"><i class="fas fa-users"></i></div></div>
+      <div class="stat-card"><div class="stat-info"><h6>Confirmed Enrollments</h6><h3>{{ total_confirmed }}</h3></div><div class="stat-icon"><i class="fas fa-check-circle"></i></div></div>
     </div>
 
     <!-- ✅ Trainings Table -->
@@ -93,20 +61,45 @@
                     <span class="badge bg-warning text-dark">{{ training.status|title }}</span>
                   {% elif training.status == 'rejected' %}
                     <span class="badge bg-danger">{{ training.status|title }}</span>
+                    {% if training.rejection_reason %}
+                      <button class="btn btn-sm btn-outline-danger ms-1" data-bs-toggle="modal" data-bs-target="#reasonModal{{ training.id }}">
+                        View Reason
+                      </button>
+                    {% endif %}
                   {% else %}
                     <span class="badge bg-secondary">{{ training.status|title }}</span>
                   {% endif %}
                 </td>
               </tr>
+
+              {% if training.rejection_reason %}
+              <!-- Modal for Rejection Reason -->
+              <div class="modal fade" id="reasonModal{{ training.id }}" tabindex="-1" aria-labelledby="reasonModalLabel{{ training.id }}" aria-hidden="true">
+                <div class="modal-dialog">
+                  <div class="modal-content">
+                    <div class="modal-header bg-danger text-white">
+                      <h5 class="modal-title" id="reasonModalLabel{{ training.id }}">Rejection Reason</h5>
+                      <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal" aria-label="Close"></button>
+                    </div>
+                    <div class="modal-body">
+                      <p>{{ training.rejection_reason }}</p>
+                    </div>
+                    <div class="modal-footer">
+                      <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
+                    </div>
+                  </div>
+                </div>
+              </div>
+              {% endif %}
               {% endfor %}
             </tbody>
           </table>
         </div>
         {% else %}
-          <div class="text-center py-4">
-            <i class="fas fa-calendar-alt fa-2x text-muted mb-2"></i>
-            <p>No trainings available for you at the moment.</p>
-          </div>
+        <div class="text-center py-4">
+          <i class="fas fa-calendar-alt fa-2x text-muted mb-2"></i>
+          <p>No trainings available for you at the moment.</p>
+        </div>
         {% endif %}
       </div>
     </div>
@@ -120,7 +113,6 @@
         <canvas id="enrollmentChart" height="300"></canvas>
       </div>
     </div>
-
   </div>
 </div>
 

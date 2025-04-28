@@ -81,20 +81,23 @@ def get_or_create_participant(user=None, full_name=None, email=None, phone=None,
         return participant
 
 
+from functools import wraps
+from django.shortcuts import redirect
+from django.contrib import messages
+from .models import Staff
+
 def admin_required(view_func):
     @wraps(view_func)
     def _wrapped_view(request, *args, **kwargs):
-        if not request.user.is_authenticated or not hasattr(request.user, 'staff') or request.user.staff.role != 'admin':
+        staff = request.user  # ✅ Just request.user itself!
+
+        if not request.user.is_authenticated or not staff.active or staff.role != 'admin':
             messages.error(request, "You do not have permission to access this page.")
-            return redirect('dashboard')  # or redirect to a custom 'unauthorized' page
+            return redirect('dashboard')
+
         return view_func(request, *args, **kwargs)
     return _wrapped_view
 
-def get_staff_for_user(user):
-    try:
-        return user.staff
-    except Staff.DoesNotExist:
-        return None
 
 
 from django.shortcuts import redirect

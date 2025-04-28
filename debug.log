@@ -1,0 +1,152 @@
+Watching for file changes with StatReloader
+Internal Server Error: /staff/new/
+Traceback (most recent call last):
+  File "C:\Users\HP\Documents\training_monitor_app\venv\Lib\site-packages\django\core\handlers\exception.py", line 55, in inner
+    response = get_response(request)
+  File "C:\Users\HP\Documents\training_monitor_app\venv\Lib\site-packages\django\core\handlers\base.py", line 197, in _get_response
+    response = wrapped_callback(request, *callback_args, **callback_kwargs)
+  File "C:\Users\HP\Documents\training_monitor_app\venv\Lib\site-packages\django\contrib\auth\decorators.py", line 59, in _view_wrapper
+    return view_func(request, *args, **kwargs)
+  File "C:\Users\HP\Documents\training_monitor_app\trainings\utils.py", line 90, in _wrapped_view
+    return view_func(request, *args, **kwargs)
+  File "C:\Users\HP\Documents\training_monitor_app\trainings\views.py", line 751, in staff_create
+    request.session['staff_create_token'] = str(uuid.uuid4())
+                                                ^^^^
+UnboundLocalError: cannot access local variable 'uuid' where it is not associated with a value
+Internal Server Error: /staff/new/
+Traceback (most recent call last):
+  File "C:\Users\HP\Documents\training_monitor_app\venv\Lib\site-packages\django\core\handlers\exception.py", line 55, in inner
+    response = get_response(request)
+  File "C:\Users\HP\Documents\training_monitor_app\venv\Lib\site-packages\django\core\handlers\base.py", line 197, in _get_response
+    response = wrapped_callback(request, *callback_args, **callback_kwargs)
+  File "C:\Users\HP\Documents\training_monitor_app\venv\Lib\site-packages\django\contrib\auth\decorators.py", line 59, in _view_wrapper
+    return view_func(request, *args, **kwargs)
+  File "C:\Users\HP\Documents\training_monitor_app\trainings\utils.py", line 90, in _wrapped_view
+    return view_func(request, *args, **kwargs)
+  File "C:\Users\HP\Documents\training_monitor_app\trainings\views.py", line 751, in staff_create
+    request.session['staff_create_token'] = str(uuid.uuid4())
+                                                ^^^^
+UnboundLocalError: cannot access local variable 'uuid' where it is not associated with a value
+Internal Server Error: /staff/new/
+Traceback (most recent call last):
+  File "C:\Users\HP\Documents\training_monitor_app\venv\Lib\site-packages\django\core\handlers\exception.py", line 55, in inner
+    response = get_response(request)
+  File "C:\Users\HP\Documents\training_monitor_app\venv\Lib\site-packages\django\core\handlers\base.py", line 197, in _get_response
+    response = wrapped_callback(request, *callback_args, **callback_kwargs)
+  File "C:\Users\HP\Documents\training_monitor_app\venv\Lib\site-packages\django\contrib\auth\decorators.py", line 59, in _view_wrapper
+    return view_func(request, *args, **kwargs)
+  File "C:\Users\HP\Documents\training_monitor_app\trainings\utils.py", line 90, in _wrapped_view
+    return view_func(request, *args, **kwargs)
+  File "C:\Users\HP\Documents\training_monitor_app\trainings\views.py", line 751, in staff_create
+    request.session['staff_create_token'] = str(uuid.uuid4())
+                                                ^^^^
+UnboundLocalError: cannot access local variable 'uuid' where it is not associated with a value
+Internal Server Error: /staff/new/
+Traceback (most recent call last):
+  File "C:\Users\HP\Documents\training_monitor_app\venv\Lib\site-packages\django\core\handlers\exception.py", line 55, in inner
+    response = get_response(request)
+  File "C:\Users\HP\Documents\training_monitor_app\venv\Lib\site-packages\django\core\handlers\base.py", line 197, in _get_response
+    response = wrapped_callback(request, *callback_args, **callback_kwargs)
+  File "C:\Users\HP\Documents\training_monitor_app\venv\Lib\site-packages\django\contrib\auth\decorators.py", line 59, in _view_wrapper
+    return view_func(request, *args, **kwargs)
+  File "C:\Users\HP\Documents\training_monitor_app\trainings\utils.py", line 90, in _wrapped_view
+    return view_func(request, *args, **kwargs)
+  File "C:\Users\HP\Documents\training_monitor_app\trainings\views.py", line 751, in staff_create
+    request.session['staff_create_token'] = str(uuid.uuid4())
+                                                ^^^^
+UnboundLocalError: cannot access local variable 'uuid' where it is not associated with a value
+C:\Users\HP\Documents\training_monitor_app\trainings\views.py changed, reloading.
+Watching for file changes with StatReloader
+C:\Users\HP\Documents\training_monitor_app\trainings\views.py changed, reloading.
+Watching for file changes with StatReloader
+C:\Users\HP\Documents\training_monitor_app\trainings\views.py changed, reloading.
+Watching for file changes with StatReloader
+Duplicate submission detected.
+C:\Users\HP\Documents\training_monitor_app\trainings\views.py changed, reloading.
+Watching for file changes with StatReloader
+GET request: Generated session_token=b4694b10-ceab-462b-98e7-fb19eda9f7a5
+POST request: session_token=b4694b10-ceab-462b-98e7-fb19eda9f7a5, form_token=b4694b10-ceab-462b-98e7-fb19eda9f7a5
+Duplicate submission detected.
+GET request: Generated session_token=e0c8b5b6-7d66-4227-bcd6-2144fe626652
+GET request: Generated session_token=d898c89d-0d4d-4b62-9b05-8b90a7464fd0
+POST request: session_token=d898c89d-0d4d-4b62-9b05-8b90a7464fd0, form_token=d898c89d-0d4d-4b62-9b05-8b90a7464fd0
+Duplicate submission detected.
+GET request: Generated session_token=9fae3304-6cd3-4671-8089-341c306e3238
+C:\Users\HP\Documents\training_monitor_app\trainings\views.py changed, reloading.
+Watching for file changes with StatReloader
+C:\Users\HP\Documents\training_monitor_app\trainings\views.py changed, reloading.
+Watching for file changes with StatReloader
+C:\Users\HP\Documents\training_monitor_app\trainings\views.py changed, reloading.
+Watching for file changes with StatReloader
+GET request: Generated session_token=651e8949-32e8-482d-a056-3e5e8dbb511b, session_keys=dict_keys(['_auth_user_id', '_auth_user_backend', '_auth_user_hash', 'staff_create_token'])
+Logging out user: elina, session_keys=dict_keys(['_auth_user_id', '_auth_user_backend', '_auth_user_hash', 'staff_create_token'])
+Session cleared after logout
+GET request: Generated session_token=938d7f9d-aca3-4471-9b59-6be69a0af08c, session_keys=dict_keys(['_auth_user_id', '_auth_user_backend', '_auth_user_hash', 'staff_create_token'])
+POST request: session_token=938d7f9d-aca3-4471-9b59-6be69a0af08c, form_token=938d7f9d-aca3-4471-9b59-6be69a0af08c, session_keys=dict_keys(['_auth_user_id', '_auth_user_backend', '_auth_user_hash', 'staff_create_token'])
+Duplicate submission detected.
+GET request: Generated session_token=7cfb0ab6-56a7-41e6-8caf-9a4bb1bc4a8d, session_keys=dict_keys(['_auth_user_id', '_auth_user_backend', '_auth_user_hash', 'staff_create_token'])
+GET request: Generated session_token=e88bdcbb-4d9d-413d-8db4-8de0995ceb04, session_keys=dict_keys(['_auth_user_id', '_auth_user_backend', '_auth_user_hash', 'staff_create_token'])
+GET request: Generated session_token=dc012eda-7bea-44b3-90c2-e5401a89c5a0, session_keys=dict_keys(['_auth_user_id', '_auth_user_backend', '_auth_user_hash', 'staff_create_token'])
+POST request: session_token=dc012eda-7bea-44b3-90c2-e5401a89c5a0, form_token=dc012eda-7bea-44b3-90c2-e5401a89c5a0, session_keys=dict_keys(['_auth_user_id', '_auth_user_backend', '_auth_user_hash', 'staff_create_token'])
+Duplicate submission detected.
+GET request: Generated session_token=00e286c0-d2bb-474d-b394-559184664d1a, session_keys=dict_keys(['_auth_user_id', '_auth_user_backend', '_auth_user_hash', 'staff_create_token'])
+Logging out user: elina, session_keys=dict_keys(['_auth_user_id', '_auth_user_backend', '_auth_user_hash', 'staff_create_token'])
+Session cleared after logout
+Logging out user: elina, session_keys=dict_keys(['_auth_user_id', '_auth_user_backend', '_auth_user_hash'])
+Session cleared after logout
+C:\Users\HP\Documents\training_monitor_app\training_monitor\settings.py changed, reloading.
+Watching for file changes with StatReloader
+C:\Users\HP\Documents\training_monitor_app\training_monitor\settings.py changed, reloading.
+Watching for file changes with StatReloader
+C:\Users\HP\Documents\training_monitor_app\training_monitor\settings.py changed, reloading.
+Watching for file changes with StatReloader
+C:\Users\HP\Documents\training_monitor_app\training_monitor\settings.py changed, reloading.
+Watching for file changes with StatReloader
+C:\Users\HP\Documents\training_monitor_app\trainings\views.py changed, reloading.
+Watching for file changes with StatReloader
+C:\Users\HP\Documents\training_monitor_app\trainings\views.py changed, reloading.
+Watching for file changes with StatReloader
+C:\Users\HP\Documents\training_monitor_app\trainings\views.py changed, reloading.
+Watching for file changes with StatReloader
+GET request: Generated session_token=c10af868-96b6-49a4-a6e8-01ec59a6a84c_1745766359.693593, session_keys=dict_keys(['_auth_user_id', '_auth_user_backend', '_auth_user_hash', 'staff_create_token'])
+POST request: session_token=c10af868-96b6-49a4-a6e8-01ec59a6a84c_1745766359.693593, form_token=c10af868-96b6-49a4-a6e8-01ec59a6a84c_1745766359.693593, session_keys=dict_keys(['_auth_user_id', '_auth_user_backend', '_auth_user_hash', 'staff_create_token'])
+Duplicate submission detected.
+GET request: Generated session_token=058f97b2-8c2a-4bc3-a13e-2bb8264e076e_1745766389.3145, session_keys=dict_keys(['_auth_user_id', '_auth_user_backend', '_auth_user_hash', 'staff_create_token'])
+GET request: Generated session_token=26954601-ca4e-455a-8a71-47c22a5a4a34_1745766394.268561, session_keys=dict_keys(['_auth_user_id', '_auth_user_backend', '_auth_user_hash', 'staff_create_token'])
+POST request: session_token=26954601-ca4e-455a-8a71-47c22a5a4a34_1745766394.268561, form_token=26954601-ca4e-455a-8a71-47c22a5a4a34_1745766394.268561, session_keys=dict_keys(['_auth_user_id', '_auth_user_backend', '_auth_user_hash', 'staff_create_token'])
+Duplicate submission detected.
+GET request: Generated session_token=6a2e4a9e-23d3-4054-81f1-326772276c29_1745766396.693955, session_keys=dict_keys(['_auth_user_id', '_auth_user_backend', '_auth_user_hash', 'staff_create_token'])
+C:\Users\HP\Documents\training_monitor_app\trainings\views.py changed, reloading.
+Watching for file changes with StatReloader
+Error creating staff: UNIQUE constraint failed: trainings_staff.user_id
+C:\Users\HP\Documents\training_monitor_app\trainings\views.py changed, reloading.
+Watching for file changes with StatReloader
+Error creating staff: UNIQUE constraint failed: trainings_staff.user_id
+Deleted user nsanzabandi after failure.
+C:\Users\HP\Documents\training_monitor_app\trainings\views.py changed, reloading.
+Watching for file changes with StatReloader
+C:\Users\HP\Documents\training_monitor_app\trainings\views.py changed, reloading.
+Watching for file changes with StatReloader
+C:\Users\HP\Documents\training_monitor_app\trainings\views.py changed, reloading.
+Watching for file changes with StatReloader
+Exception during staff creation: UNIQUE constraint failed: trainings_staff.user_id
+C:\Users\HP\Documents\training_monitor_app\trainings\views.py changed, reloading.
+Watching for file changes with StatReloader
+Watching for file changes with StatReloader
+C:\Users\HP\Documents\training_monitor_app\trainings\forms.py changed, reloading.
+Watching for file changes with StatReloader
+C:\Users\HP\Documents\training_monitor_app\trainings\forms.py changed, reloading.
+Watching for file changes with StatReloader
+Logging out user: elina, session_keys=dict_keys(['_auth_user_id', '_auth_user_backend', '_auth_user_hash', 'staff_create_token'])
+Session cleared after logout
+Exception during staff creation: UNIQUE constraint failed: trainings_staff.user_id
+Deleted partially created user karimu after failure.
+Exception during staff creation: UNIQUE constraint failed: trainings_staff.user_id
+Deleted partially created user nsanzimana after failure.
+C:\Users\HP\Documents\training_monitor_app\training_monitor\settings.py changed, reloading.
+Watching for file changes with StatReloader
+C:\Users\HP\Documents\training_monitor_app\trainings\models.py changed, reloading.
+Watching for file changes with StatReloader
+C:\Users\HP\Documents\training_monitor_app\trainings\models.py changed, reloading.
+Watching for file changes with StatReloader
+C:\Users\HP\Documents\training_monitor_app\training_monitor\settings.py changed, reloading.
