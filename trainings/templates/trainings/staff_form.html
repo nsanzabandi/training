@@ -14,6 +14,7 @@
       </div>
 
       <div class="modal-body">
+        <!-- ✅ Staff Form -->
         <form method="post" enctype="multipart/form-data" action="{% url 'staff_create' %}" id="staffForm">
           {% csrf_token %}
           <div class="row g-3">
@@ -21,12 +22,26 @@
               <div class="col-md-6">
                 {{ field.label_tag }}
                 {{ field|add_class:"form-control" }}
-                {% if field.errors %}
-                  <div class="text-danger small">{{ field.errors.0 }}</div>
+                {% if field.help_text %}
+                  <small class="form-text text-muted">{{ field.help_text }}</small>
                 {% endif %}
+
+                <!-- ✅ Show all field-specific errors here -->
+                {% for error in field.errors %}
+                  <div class="text-danger small mt-1">{{ error }}</div>
+                {% endfor %}
               </div>
             {% endfor %}
           </div>
+
+          <!-- ✅ Optionally show any leftover non-field errors below all fields -->
+          {% if form.non_field_errors %}
+            <div class="alert alert-danger mt-4">
+              {% for error in form.non_field_errors %}
+                <div>{{ error }}</div>
+              {% endfor %}
+            </div>
+          {% endif %}
         </form>
       </div>
 
@@ -38,6 +53,7 @@
   </div>
 </div>
 
+<!-- ✅ Hide modal backdrop issue fix -->
 <style>
 .modal-backdrop {
   display: none !important;
@@ -47,6 +63,7 @@ body.modal-open {
 }
 </style>
 
+<!-- ✅ Auto-open modal script -->
 <script>
 document.addEventListener('DOMContentLoaded', function () {
   const modal = new bootstrap.Modal(document.getElementById('createStaffModal'));

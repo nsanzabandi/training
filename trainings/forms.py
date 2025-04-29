@@ -111,31 +111,40 @@ class StaffSignupForm(forms.ModelForm):
             'role', 'department', 'position', 'contact_number', 'profile_picture'
         ]
 
+    def clean_username(self):
+        username = self.cleaned_data.get('username')
+        qs = get_user_model().objects.filter(username=username)
+        if self.instance.pk:
+            qs = qs.exclude(pk=self.instance.pk)
+        if qs.exists():
+            raise forms.ValidationError("Username already exists.")
+        return username
+
+    def clean_email(self):
+        email = self.cleaned_data.get('email')
+        qs = get_user_model().objects.filter(email=email)
+        if self.instance.pk:
+            qs = qs.exclude(pk=self.instance.pk)
+        if qs.exists():
+            raise forms.ValidationError("Email already exists.")
+        return email
+
     def clean(self):
         cleaned_data = super().clean()
         password1 = cleaned_data.get('password1')
         password2 = cleaned_data.get('password2')
-        username = cleaned_data.get('username')
-        email = cleaned_data.get('email')
-
-        if password1 != password2:
-            raise forms.ValidationError("Passwords do not match.")
-
-        if username and get_user_model().objects.filter(username=username).exists():
-            raise forms.ValidationError("Username already exists.")
-
-        if email and get_user_model().objects.filter(email=email).exists():
-            raise forms.ValidationError("Email already exists.")
-
+        if password1 and password2 and password1 != password2:
+            self.add_error('password2', "Passwords do not match.")
         return cleaned_data
 
     def save(self, commit=True):
         staff = super().save(commit=False)
         staff.set_password(self.cleaned_data['password1'])
-        staff.active = False  # Adjust based on your approval logic
+        staff.active = False  # Adjust based on your logic
         if commit:
             staff.save()
         return staff
+
         
 
 # ✅ Custom User Creation (for Django admin compatibility)
@@ -168,17 +177,23 @@ class EnrollmentForm(forms.ModelForm):
         training = cleaned_data.get('training')
 
         if participant and training:
-            if Enrollment.objects.filter(participant=participant, training=training).exists():
-                raise forms.ValidationError("This participant is already enrolled in this training.")
+            qs = Enrollment.objects.filter(participant=participant)
+            if self.instance.pk:
+                qs = qs.exclude(pk=self.instance.pk)
 
-            participant_enrollments = Enrollment.objects.filter(participant=participant)
-            for e in participant_enrollments:
-                if e.training.start_date == training.start_date:
+            if qs.filter(training=training).exists():
+                raise forms.ValidationError("❌ This participant is already enrolled in this training.")
+
+            # ❗ Prevent overlap: cannot enroll if already enrolled in another training that overlaps
+            for e in qs:
+                if e.training.start_date <= training.end_date and training.start_date <= e.training.end_date:
                     raise forms.ValidationError(
-                        f"{participant.full_name} is already enrolled in another training on {training.start_date}."
+                        f"❌ {participant.full_name} is already attending another training "
+                        f"from {e.training.start_date} to {e.training.end_date}."
                     )
 
         return cleaned_data
+
 
 from django.contrib.auth import get_user_model
 

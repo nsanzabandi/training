@@ -52,6 +52,8 @@ urlpatterns = [
     path('enrollments/new/', views.enrollment_create, name='enrollment_create'),
     path('confirm/<uuid:token>/', views.confirm_enrollment, name='confirm_enrollment'),
     path('enrollment/invite/<uuid:token>/', views.enrollment_invite_form, name='enrollment_invite_form'),
+    path('enrollment/<int:pk>/edit/', views.enrollment_edit, name='enrollment_edit'),
+    path('enrollment/<int:pk>/delete/', views.enrollment_delete, name='enrollment_delete'),
 
     # === Supervisor Dashboard ===
     path('supervisor/dashboard/', views.supervisor_dashboard, name='supervisor_dashboard'),

@@ -298,6 +298,7 @@ def training_delete(request, pk):
     return redirect('training_list')
 
 
+
 @login_required
 def approve_training(request, training_id):
     staff = request.user
@@ -999,34 +1000,39 @@ def quick_invite_create(request):
             training = form.cleaned_data['training']
 
             # ✅ Check if Participant with this email already exists
-            participant, created = Participant.objects.get_or_create(email=email, defaults={
-                'full_name': '',
-                'phone': '',
-                'position': '',
-                'notes': '',
-            })
+            try:
+                participant = Participant.objects.get(email=email)
+                messages.info(request, "Participant already exists. Enroll instead.")
 
-            # ✅ Check if participant already invited to the same training
-            if Enrollment.objects.filter(participant=participant, training=training).exists():
-                messages.warning(request, "This participant is already enrolled or invited to this training.")
-                return redirect('dashboard')
+                # ✅ Optional: Pass training and email to prefill later
+                return redirect(f"{reverse('enrollment_create')}?email={email}&training_id={training.id}")
 
-            # ✅ Create the enrollment
-            enrollment = Enrollment.objects.create(
-                training=training,
-                participant=participant,
-                enrolled_by=request.user,
-                invite_token=uuid.uuid4()
-            )
+            except Participant.DoesNotExist:
+                # ✅ Participant doesn't exist: create and invite
+                participant = Participant.objects.create(
+                    email=email,
+                    full_name='',
+                    phone='',
+                    position='',
+                    notes='',
+                )
 
-            # ✅ Generate and send invite link via email
-            invite_link = request.build_absolute_uri(
-                reverse('enrollment_invite_form', args=[str(enrollment.invite_token)])
-            )
+                # ✅ Create enrollment
+                enrollment = Enrollment.objects.create(
+                    training=training,
+                    participant=participant,
+                    enrolled_by=request.user,
+                    invite_token=uuid.uuid4()
+                )
 
-            send_mail(
-                subject='Training Invitation - Complete Your Profile',
-                message=f"""Dear Participant,
+                # ✅ Send invitation
+                invite_link = request.build_absolute_uri(
+                    reverse('enrollment_invite_form', args=[str(enrollment.invite_token)])
+                )
+
+                send_mail(
+                    subject='Training Invitation - Complete Your Profile',
+                    message=f"""Dear Participant,
 
 You are invited to the training "{training.title}".
 Please complete your profile using the following link:
@@ -1034,14 +1040,73 @@ Please complete your profile using the following link:
 {invite_link}
 
 Thank you.""",
-                from_email=settings.DEFAULT_FROM_EMAIL,
-                recipient_list=[email],
-                fail_silently=False,
-            )
+                    from_email=settings.DEFAULT_FROM_EMAIL,
+                    recipient_list=[email],
+                    fail_silently=False,
+                )
 
-            messages.success(request, "Invitation email sent successfully.")
-            return redirect('dashboard')
+                messages.success(request, "Invitation email sent successfully.")
+                return redirect('dashboard')
+
     else:
         form = QuickInviteForm()
 
-    return render(request, 'trainings/quick_invite_form.html', {'form': form, 'staff': request.user})
+    return render(request, 'trainings/quick_invite_form.html', {
+        'form': form,
+        'staff': request.user
+    })
+
+
+
+# === Enrollment Edit View ===
+@login_required
+def enrollment_edit(request, pk):
+    enrollment = get_object_or_404(Enrollment, pk=pk)
+    staff = request.user
+
+    if staff.role != 'admin' and enrollment.enrolled_by != staff:
+        messages.error(request, "You are not authorized to edit this enrollment.")
+        return redirect('enrollment_list')
+
+    if request.method == 'POST':
+        form = EnrollmentForm(request.POST, instance=enrollment, user=request.user)
+        if form.is_valid():
+            form.save()
+            messages.success(request, "Enrollment updated successfully.")
+            return redirect('enrollment_list')
+        else:
+            # ❗ SHOW detailed validation errors here
+            for field, errors in form.errors.items():
+                for error in errors:
+                    messages.error(request, f"{field.capitalize()}: {error}")
+    else:
+        form = EnrollmentForm(instance=enrollment, user=request.user)
+
+    return render(request, 'trainings/enrollment_form.html', {
+        'form': form,
+        'staff': staff,
+        'editing': True,
+        'enrollment': enrollment,
+    })
+
+
+# === Enrollment Delete View ===
+@login_required
+def enrollment_delete(request, pk):
+    enrollment = get_object_or_404(Enrollment, pk=pk)
+    staff = request.user
+
+    # ✅ Permission: allow only admin or enrollment creator to delete
+    if staff.role != 'admin' and enrollment.enrolled_by != staff:
+        messages.error(request, "You are not authorized to delete this enrollment.")
+        return redirect('enrollment_list')
+
+    if request.method == 'POST':
+        enrollment.delete()
+        messages.success(request, "Enrollment deleted successfully.")
+        return redirect('enrollment_list')
+
+    return render(request, 'trainings/enrollment_confirm_delete.html', {
+        'enrollment': enrollment,
+        'staff': staff
+    })

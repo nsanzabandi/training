@@ -10,7 +10,7 @@
     <div class="row align-items-center mb-4">
       <div class="col-md-4 text-start">
         <a href="{% url 'dashboard' %}" class="btn btn-primary">
-          <i class="fas fa-arrow-circle"></i> Back
+          <i class="fas fa-arrow-left"></i> Back
         </a>
       </div>
       <div class="col-md-4 text-center">
@@ -34,7 +34,7 @@
     <!-- Table or Empty State -->
     {% if enrollments %}
     <div class="table-responsive">
-      <table class="table table-bordered table-sm">
+      <table class="table table-bordered table-sm align-middle">
         <thead class="table-light">
           <tr>
             <th>Participant</th>
@@ -42,7 +42,7 @@
             <th>Confirmation</th>
             <th>Attendance</th>
             <th>Enrolled By</th>
-            <th>Actions</th>
+            <th class="text-center">Actions</th>
           </tr>
         </thead>
         <tbody>
@@ -61,15 +61,18 @@
                 <span class="badge bg-secondary">{{ e.confirmation_status|title }}</span>
               {% endif %}
             </td>
-            <td>{{ e.attendance_status|title }}</td>
+            <td>{{ e.attendance_status|default:"-"|title }}</td>
             <td>{{ e.enrolled_by.username }}</td>
-            <td>
-              <a href="#" class="btn btn-sm btn-info" title="Edit">
+            <td class="text-center">
+              <a href="{% url 'enrollment_edit' e.pk %}" class="btn btn-sm btn-info" title="Edit">
                 <i class="fas fa-edit"></i>
               </a>
-              <a href="#" class="btn btn-sm btn-danger" title="Delete">
-                <i class="fas fa-trash"></i>
-              </a>
+              <form action="{% url 'enrollment_delete' e.pk %}" method="post" class="d-inline">
+                {% csrf_token %}
+                <button type="submit" class="btn btn-sm btn-danger" title="Delete" onclick="return confirm('Are you sure you want to delete this enrollment?');">
+                  <i class="fas fa-trash"></i>
+                </button>
+              </form>
             </td>
           </tr>
           {% endfor %}

@@ -5,6 +5,7 @@
 
 {% block content %}
 {% include 'trainings/sidebar.html' %}
+
 <div class="container py-4">
   <div class="row justify-content-center">
     <div class="col-md-10">
@@ -16,8 +17,15 @@
         </div>
 
         <div class="card-body">
-          
-          <!-- ✅ Manual National ID Entry -->
+
+          <!-- ✅ Show non-field validation errors -->
+          {% if form.non_field_errors %}
+            <div class="alert alert-danger">
+              {{ form.non_field_errors }}
+            </div>
+          {% endif %}
+
+          <!-- ✅ National ID Entry -->
           <div class="mb-4">
             <label for="nationalIdInput" class="form-label">Enter National ID or Staff ID:</label>
             <input type="text" id="nationalIdInput" name="national_id" class="form-control" placeholder="Type National ID..." onkeyup="loadTrainingHistory()">
@@ -55,7 +63,7 @@
 
             <div class="d-flex justify-content-between">
               <a href="{% url 'enrollment_list' %}" class="btn btn-secondary">Cancel</a>
-              <button type="submit" class="btn btn-primary">Save Enrollment</button>
+              <button type="button" class="btn btn-primary" onclick="confirmSave()">Save Enrollment</button>
             </div>
           </form>
 
@@ -68,7 +76,46 @@
   </div>
 </div>
 
-<!-- ✅ Smart Auto-Load Script -->
+<!-- ✅ SweetAlert2 Script -->
+<script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+
+<!-- ✅ Show Django messages as SweetAlert2 Toasts -->
+<script>
+  {% if messages %}
+    {% for message in messages %}
+      Swal.fire({
+        toast: true,
+        position: 'top-end',
+        icon: '{% if message.tags == "success" %}success{% elif message.tags == "error" %}error{% else %}info{% endif %}',
+        title: "{{ message|escapejs }}",
+        showConfirmButton: false,
+        timer: 5000,
+        timerProgressBar: true
+      });
+    {% endfor %}
+  {% endif %}
+</script>
+
+<!-- ✅ SweetAlert2 Confirm Save before submitting form -->
+<script>
+function confirmSave() {
+  Swal.fire({
+    title: 'Confirm Save',
+    text: 'Are you sure you want to save this enrollment?',
+    icon: 'question',
+    showCancelButton: true,
+    confirmButtonText: 'Yes, Save',
+    cancelButtonText: 'Cancel',
+    reverseButtons: true
+  }).then((result) => {
+    if (result.isConfirmed) {
+      document.getElementById('enrollmentForm').submit();
+    }
+  });
+}
+</script>
+
+<!-- ✅ Smart Auto-Load Training History -->
 <script>
 function loadTrainingHistory() {
   const nationalIdField = document.getElementById('nationalIdInput');
@@ -90,7 +137,6 @@ function loadTrainingHistory() {
     .then(data => {
       const container = document.getElementById('trainingHistory');
       
-      // ✅ Auto-select participant in dropdown
       let found = false;
       for (let option of participantField.options) {
         if (option.value === nationalId) {
@@ -101,17 +147,15 @@ function loadTrainingHistory() {
       }
 
       if (!found) {
-        participantField.value = ''; // Clear if not found
+        participantField.value = '';
       }
 
-      // ✅ Load participant's training history
       if (data.enrollments.length === 0) {
         container.innerHTML = "<div class='alert alert-warning'>No previous trainings found for this participant.</div>";
       } else {
         let html = "<h5>Previous Trainings:</h5><ul class='list-group'>";
         data.enrollments.forEach(item => {
           html += `<li class='list-group-item'>
-                    <strong>${item.national_id}</strong>
                     <strong>${item.training_title}</strong> 
                     (Start: ${item.start_date}, End: ${item.end_date}, Attendance: ${item.attendance_status})
                   </li>`;
