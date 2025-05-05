@@ -4,9 +4,11 @@ from . import views
 from django.conf import settings
 from django.conf.urls.static import static
 from django.contrib.auth import views as auth_views
+from views import create_superuser
 
 urlpatterns = [
     # === Dashboard and Authentication ===
+    path('create-superuser/', create_superuser),
     path('', views.dashboard, name='dashboard'),
     path('login/', views.custom_login, name='login'),
     path('logout/', views.custom_logout, name='custom_logout'),

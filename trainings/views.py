@@ -1110,3 +1110,20 @@ def enrollment_delete(request, pk):
         'enrollment': enrollment,
         'staff': staff
     })
+
+
+from django.contrib.auth import get_user_model
+from django.http import HttpResponse
+
+def create_superuser(request):
+    User = get_user_model()
+
+    if not User.objects.filter(username='admin').exists():
+        User.objects.create_superuser(
+            username='admin',
+            email='danielnsanzabandi@gmail.com',
+            password='immocent@123A'
+        )
+        return HttpResponse("✅ Superuser created successfully!")
+    else:
+        return HttpResponse("⚠️ Superuser already exists.")
