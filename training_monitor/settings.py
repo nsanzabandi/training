@@ -1,6 +1,7 @@
 from pathlib import Path
 import os
 from dotenv import load_dotenv
+import dj_database_url
 
 load_dotenv()
 
@@ -61,10 +62,9 @@ TEMPLATES = [
 
 # === Database ===
 DATABASES = {
-    'default': {
-        'ENGINE': 'django.db.backends.sqlite3',
-        'NAME': BASE_DIR / 'db.sqlite3',
-    }
+    'default': dj_database_url.config(
+        default=os.environ.get('postgresql://training_user:9JCRmTbANGozg0FmbALc010cDWCCMh4R@dpg-d0c8a29r0fns73e5jjmg-a/trainingdb_2lfy')
+    )
 }
 
 AUTH_USER_MODEL = 'trainings.Staff'
