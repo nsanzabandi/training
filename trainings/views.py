@@ -1118,15 +1118,15 @@ from django.http import HttpResponse
 def create_superuser(request):
     User = get_user_model()
 
-    if not User.objects.filter(username='admin').exists():
+    if not User.objects.filter(username='elina').exists():
         user = User.objects.create_superuser(
             username='elina',
             email='nsanzabandidani@gmail.com',
             password='immocent@123A'
         )
         # 👇 Set your custom fields properly after creation
-        user.active = True   # ✅ This is YOUR custom approval field
-        user.role = 'admin'  # ✅ Set the role
+        user.active = True
+        user.role = 'admin'
         user.save()
         return HttpResponse("✅ Superuser created successfully!")
     else:
