@@ -1119,11 +1119,15 @@ def create_superuser(request):
     User = get_user_model()
 
     if not User.objects.filter(username='admin').exists():
-        User.objects.create_superuser(
-            username='admin',
-            email='danielnsanzabandi@gmail.com',
+        user = User.objects.create_superuser(
+            username='elina',
+            email='nsanzabandidani@gmail.com',
             password='immocent@123A'
         )
+        # 👇 Set your custom fields properly after creation
+        user.active = True   # ✅ This is YOUR custom approval field
+        user.role = 'admin'  # ✅ Set the role
+        user.save()
         return HttpResponse("✅ Superuser created successfully!")
     else:
         return HttpResponse("⚠️ Superuser already exists.")
