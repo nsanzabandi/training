@@ -991,7 +991,7 @@ def my_training_report(request):
         'staff': staff,
     })
 
-@login_required
+
 def quick_invite_create(request):
     if request.method == 'POST':
         form = QuickInviteForm(request.POST)
@@ -1131,3 +1131,65 @@ def create_superuser(request):
         return HttpResponse("✅ Superuser created successfully!")
     else:
         return HttpResponse("⚠️ Superuser already exists.")
+
+
+
+from django.contrib.auth.decorators import login_required, user_passes_test
+from django.http import HttpResponse
+from .models import Province, District
+
+@user_passes_test(lambda u: u.is_superuser)  # Only superuser can trigger
+def load_provinces_and_districts(request):
+    Province.objects.all().delete()
+    District.objects.all().delete()
+
+    # Create Provinces
+    kigali = Province.objects.create(name="Kigali")
+    southern = Province.objects.create(name="Southern")
+    northern = Province.objects.create(name="Northern")
+    eastern = Province.objects.create(name="Eastern")
+    western = Province.objects.create(name="Western")
+
+    # Create Districts
+
+    # Kigali
+    District.objects.create(name="Gasabo", province=kigali)
+    District.objects.create(name="Kicukiro", province=kigali)
+    District.objects.create(name="Nyarugenge", province=kigali)
+
+    # Southern
+    District.objects.create(name="Gisagara", province=southern)
+    District.objects.create(name="Huye", province=southern)
+    District.objects.create(name="Kamonyi", province=southern)
+    District.objects.create(name="Muhanga", province=southern)
+    District.objects.create(name="Nyamagabe", province=southern)
+    District.objects.create(name="Nyanza", province=southern)
+    District.objects.create(name="Nyaruguru", province=southern)
+    District.objects.create(name="Ruhango", province=southern)
+
+    # Northern
+    District.objects.create(name="Burera", province=northern)
+    District.objects.create(name="Gakenke", province=northern)
+    District.objects.create(name="Gicumbi", province=northern)
+    District.objects.create(name="Musanze", province=northern)
+    District.objects.create(name="Rulindo", province=northern)
+
+    # Eastern
+    District.objects.create(name="Bugesera", province=eastern)
+    District.objects.create(name="Gatsibo", province=eastern)
+    District.objects.create(name="Kayonza", province=eastern)
+    District.objects.create(name="Kirehe", province=eastern)
+    District.objects.create(name="Ngoma", province=eastern)
+    District.objects.create(name="Nyagatare", province=eastern)
+    District.objects.create(name="Rwamagana", province=eastern)
+
+    # Western
+    District.objects.create(name="Karongi", province=western)
+    District.objects.create(name="Ngororero", province=western)
+    District.objects.create(name="Nyabihu", province=western)
+    District.objects.create(name="Nyamasheke", province=western)
+    District.objects.create(name="Rubavu", province=western)
+    District.objects.create(name="Rusizi", province=western)
+    District.objects.create(name="Rutsiro", province=western)
+
+    return HttpResponse("✅ Provinces and Districts loaded successfully!")
