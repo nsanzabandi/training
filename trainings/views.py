@@ -996,20 +996,18 @@ def quick_invite_create(request):
     if request.method == 'POST':
         form = QuickInviteForm(request.POST)
         if form.is_valid():
+            national_id = form.cleaned_data['national_id']  # ✅
             email = form.cleaned_data['email']
             training = form.cleaned_data['training']
 
-            # ✅ Check if Participant with this email already exists
             try:
-                participant = Participant.objects.get(email=email)
+                participant = Participant.objects.get(national_id=national_id)
                 messages.info(request, "Participant already exists. Enroll instead.")
-
-                # ✅ Optional: Pass training and email to prefill later
                 return redirect(f"{reverse('enrollment_create')}?email={email}&training_id={training.id}")
 
             except Participant.DoesNotExist:
-                # ✅ Participant doesn't exist: create and invite
                 participant = Participant.objects.create(
+                    national_id=national_id,  # ✅
                     email=email,
                     full_name='',
                     phone='',
@@ -1017,7 +1015,6 @@ def quick_invite_create(request):
                     notes='',
                 )
 
-                # ✅ Create enrollment
                 enrollment = Enrollment.objects.create(
                     training=training,
                     participant=participant,
@@ -1025,7 +1022,6 @@ def quick_invite_create(request):
                     invite_token=uuid.uuid4()
                 )
 
-                # ✅ Send invitation
                 invite_link = request.build_absolute_uri(
                     reverse('enrollment_invite_form', args=[str(enrollment.invite_token)])
                 )
@@ -1055,6 +1051,7 @@ Thank you.""",
         'form': form,
         'staff': request.user
     })
+
 
 
 

@@ -10,19 +10,48 @@
     <div class="col-md-6">
       <div class="card shadow-sm">
         <div class="card-header bg-white">
-          <h4 class="mb-0"><i class="fas fa-paper-plane text-primary me-2"></i> Invite Participant</h4>
+          <h4 class="mb-0">
+            <i class="fas fa-paper-plane text-primary me-2"></i> Invite Participant
+          </h4>
         </div>
         <div class="card-body">
           <form method="post">
             {% csrf_token %}
+
+            <!-- ✅ National ID field -->
+            <div class="mb-3">
+              {{ form.national_id.label_tag }}
+              {{ form.national_id|add_class:"form-control" }}
+              {% if form.national_id.errors %}
+                <div class="text-danger small">
+                  {{ form.national_id.errors }}
+                </div>
+              {% endif %}
+            </div>
+
+            <!-- ✅ Email field -->
             <div class="mb-3">
               {{ form.email.label_tag }}
               {{ form.email|add_class:"form-control" }}
+              {% if form.email.errors %}
+                <div class="text-danger small">
+                  {{ form.email.errors }}
+                </div>
+              {% endif %}
             </div>
+
+            <!-- ✅ Training field -->
             <div class="mb-3">
               {{ form.training.label_tag }}
               {{ form.training|add_class:"form-select" }}
+              {% if form.training.errors %}
+                <div class="text-danger small">
+                  {{ form.training.errors }}
+                </div>
+              {% endif %}
             </div>
+
+            <!-- ✅ Buttons -->
             <div class="d-flex justify-content-between">
               <a href="{% url 'dashboard' %}" class="btn btn-secondary">Cancel</a>
               <button type="submit" class="btn btn-primary">Send Invite</button>

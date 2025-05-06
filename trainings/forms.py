@@ -4,6 +4,7 @@ from django import forms
 from .models import Training, Participant, Department, Staff, Enrollment
 from django.contrib.auth.forms import UserCreationForm
 from django.contrib.auth.models import User
+from django.core.exceptions import ValidationError
 
 # ✅ Correct UserUpdateForm (only one definition now)
 class UserUpdateForm(forms.ModelForm):
@@ -230,7 +231,29 @@ class StaffSignupForm(forms.ModelForm):
             staff.save()
         return staff
 
-# ✅ Quick Invite Form
+# ✅ Custom validator
+def validate_national_id(value):
+    if not value.isdigit():
+        raise ValidationError("National ID must contain only digits.")
+    if len(value) != 16:
+        raise ValidationError("National ID must be exactly 16 digits long.")
+
+# ✅ Updated form
 class QuickInviteForm(forms.Form):
-    email = forms.EmailField(label="Participant Email")
-    training = forms.ModelChoiceField(queryset=Training.objects.filter(status='approved'))
+    national_id = forms.CharField(
+        label="Participant National ID",
+        max_length=16,
+        required=True,
+        validators=[validate_national_id],
+        widget=forms.TextInput(attrs={'placeholder': 'Enter National ID'})
+    )
+    email = forms.EmailField(
+        label="Participant Email",
+        required=True,
+        widget=forms.EmailInput(attrs={'placeholder': 'Enter Email'})
+    )
+    training = forms.ModelChoiceField(
+        queryset=Training.objects.filter(status='approved'),
+        label="Select Approved Training",
+        required=True
+    )
