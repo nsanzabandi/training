@@ -546,8 +546,6 @@ def enrollment_invite_form(request, token):
         'training': enrollment.training
     })
 
-
-@login_required
 def confirm_enrollment(request, token):
     enrollment = get_object_or_404(Enrollment, invite_token=token)
 
