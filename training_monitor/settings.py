@@ -10,8 +10,8 @@ BASE_DIR = Path(__file__).resolve().parent.parent
 
 # === Security ===
 SECRET_KEY = os.environ.get('SECRET_KEY', 'insecure-key-for-dev')
-DEBUG = os.environ.get('DEBUG', 'True') == 'True'  # Default to True for dev
-ALLOWED_HOSTS = ['*','training-monitor.onrender.com', 'training-c1v8.onrender.com', 'localhost', '127.0.0.1']
+DEBUG = os.environ.get('DEBUG', 'True') == 'True'
+ALLOWED_HOSTS = ['*', 'training-monitor.onrender.com', 'training-c1v8.onrender.com', 'localhost', '127.0.0.1']
 
 # === Installed Apps ===
 INSTALLED_APPS = [
@@ -25,6 +25,10 @@ INSTALLED_APPS = [
     'django.contrib.staticfiles',
     'trainings',
     'widget_tweaks',
+
+    # ✅ Add these for Cloudinary
+    'cloudinary_storage',
+    'cloudinary',
 ]
 
 # === Middleware ===
@@ -60,8 +64,6 @@ TEMPLATES = [
     },
 ]
 
-
-
 # === Database ===
 DATABASES = {
     'default': dj_database_url.config(
@@ -71,14 +73,7 @@ DATABASES = {
     )
 }
 
-#DATABASES = {
-   # 'default': dj_database_url.config(
-   #     default=os.environ.get('postgresql://training_user:9JCRmTbANGozg0FmbALc010cDWCCMh4R@dpg-d0c8a29r0fns73e5jjmg-a/trainingdb_2lfy')
-   # )
-#}
-
 AUTH_USER_MODEL = 'trainings.Staff'
-
 
 # === Password Validation ===
 AUTH_PASSWORD_VALIDATORS = [
@@ -100,9 +95,22 @@ STATICFILES_DIRS = [BASE_DIR / 'trainings/static']
 STATIC_ROOT = os.path.join(BASE_DIR, 'staticfiles')
 STATICFILES_STORAGE = 'whitenoise.storage.CompressedManifestStaticFilesStorage'
 
-# === Media Files === ✅
-MEDIA_URL = '/media/'
-MEDIA_ROOT = os.path.join(BASE_DIR, 'media')
+# === Media Files (✅ Smart Switching) ===
+if DEBUG:
+    # 📍 Local development: Save uploads locally
+    MEDIA_URL = '/media/'
+    MEDIA_ROOT = os.path.join(BASE_DIR, 'media')
+else:
+    # 📍 Production: Save uploads to Cloudinary
+    DEFAULT_FILE_STORAGE = 'cloudinary_storage.storage.MediaCloudinaryStorage'
+    
+    CLOUDINARY_STORAGE = {
+        'CLOUD_NAME': os.getenv('CLOUDINARY_CLOUD_NAME'),
+        'API_KEY': os.getenv('CLOUDINARY_API_KEY'),
+        'API_SECRET': os.getenv('CLOUDINARY_API_SECRET'),
+    }
+    
+    MEDIA_URL = f"https://res.cloudinary.com/{os.getenv('CLOUDINARY_CLOUD_NAME')}/"
 
 # === Authentication ===
 LOGIN_URL = '/login/'
@@ -124,6 +132,3 @@ DEFAULT_FROM_EMAIL = EMAIL_HOST_USER
 SECURE_PROXY_SSL_HEADER = ('HTTP_X_FORWARDED_PROTO', 'https')
 SESSION_COOKIE_SECURE = not DEBUG
 CSRF_COOKIE_SECURE = not DEBUG
-
-
-
