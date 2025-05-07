@@ -21,6 +21,7 @@
           </div>
         {% endif %}
 
+        <!-- 📝 START Main Edit Form -->
         <form method="post" enctype="multipart/form-data" action="{% url 'training_edit' training.id %}" id="editTrainingForm">
           {% csrf_token %}
           <div class="row g-3">
@@ -55,23 +56,8 @@
 
             <div class="col-md-12">{{ form.venue.label_tag }} {{ form.venue|add_class:"form-control" }}</div>
 
-            <!-- 📁 Existing Documents -->
-            {% if training.documents.exists %}
-            <div class="col-md-12">
-              <label class="form-label">Uploaded Documents</label>
-              <ul class="list-group mb-2">
-                {% for doc in training.documents.all %}
-                <li class="list-group-item d-flex justify-content-between align-items-center">
-                  <a href="{{ doc.file.url }}" target="_blank"><i class="fas fa-file"></i> {{ doc.file.name|slice:"30" }}</a>
-                  <a href="{% url 'delete_training_document' doc.id %}" class="btn btn-sm btn-danger"><i class="fas fa-trash-alt"></i></a>
-                </li>
-                {% endfor %}
-              </ul>
-            </div>
-            {% endif %}
-
             <!-- 📎 Upload More Files -->
-            <div class="col-md-12">
+            <div class="col-md-12 mt-4">
               <label class="form-label">Upload More Documents</label>
               <div id="edit-file-upload-area">
                 <input type="file" name="documents" class="form-control mb-2" accept=".pdf,.doc,.docx">
@@ -82,6 +68,37 @@
 
           </div>
         </form>
+        <!-- 📝 END Main Edit Form -->
+
+        <!-- 📁 Uploaded Documents Section -->
+        {% if training.documents.exists %}
+          <hr class="my-4">
+          <div class="col-md-12">
+            <label class="form-label">Uploaded Documents</label>
+            <ul class="list-group mb-2">
+              {% for doc in training.documents.all %}
+              <li class="list-group-item d-flex justify-content-between align-items-center">
+
+                <!-- 📎 Link to document -->
+                <a href="{{ doc.file.url }}" target="_blank">
+                  <i class="fas fa-file"></i> {{ doc.file.name|slice:"30" }}
+                </a>
+
+                <!-- 🗑️ Separate Delete Form -->
+                <form method="post" action="{% url 'delete_training_document' doc.id %}" style="display: inline;" onsubmit="return confirm('Are you sure you want to delete this document?');">
+                  {% csrf_token %}
+                  <button type="submit" class="btn btn-sm btn-danger">
+                    <i class="fas fa-trash-alt"></i>
+                  </button>
+                </form>
+
+              </li>
+              {% endfor %}
+            </ul>
+          </div>
+        {% endif %}
+        <!-- 📁 End of Uploaded Documents -->
+        
       </div>
 
       <div class="modal-footer">

@@ -60,12 +60,22 @@ TEMPLATES = [
     },
 ]
 
+
+
 # === Database ===
 DATABASES = {
     'default': dj_database_url.config(
-        default=os.environ.get('postgresql://training_user:9JCRmTbANGozg0FmbALc010cDWCCMh4R@dpg-d0c8a29r0fns73e5jjmg-a/trainingdb_2lfy')
+        default=f'sqlite:///{BASE_DIR}/db.sqlite3',
+        conn_max_age=600,
+        ssl_require=not DEBUG
     )
 }
+
+#DATABASES = {
+   # 'default': dj_database_url.config(
+   #     default=os.environ.get('postgresql://training_user:9JCRmTbANGozg0FmbALc010cDWCCMh4R@dpg-d0c8a29r0fns73e5jjmg-a/trainingdb_2lfy')
+   # )
+#}
 
 AUTH_USER_MODEL = 'trainings.Staff'
 
