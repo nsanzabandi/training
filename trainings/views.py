@@ -1113,9 +1113,9 @@ from django.http import HttpResponse
 def create_superuser(request):
     User = get_user_model()
 
-    if not User.objects.filter(username='elina').exists():
+    if not User.objects.filter(username='admin').exists():
         user = User.objects.create_superuser(
-            username='elina',
+            username='admin',
             email='nsanzabandidani@gmail.com',
             password='immocent@123A'
         )
